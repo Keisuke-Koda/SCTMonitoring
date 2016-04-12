@@ -3,7 +3,7 @@
 #====================================
 #  Library SCT_Monitoring
 #
-#   Generated Tue Apr 12 10:45:38 2016  by dhayakaw
+#   Generated Tue Apr 12 11:41:43 2016  by kkoda
 #
 #====================================
 
@@ -107,7 +107,7 @@ SCT_Monitoring :: dirs  SCT_MonitoringLIB
 SCT_MonitoringLIB :: $(SCT_Monitoringshstamp)
 	$(echo) "SCT_Monitoring : library ok"
 
-$(SCT_Monitoringlib) :: $(bin)SCTRatioNoiseMonTool.o $(bin)SCTLorentzMonTool.o $(bin)SCTSummaryMonTool.o $(bin)SCTMotherTrigMonTool.o $(bin)SCTHitEffMonTool.o $(bin)SCTHitsNoiseMonTool.o $(bin)SCTTracksMonTool.o $(bin)SCTErrMonTool.o $(bin)SCT_Monitoring_entries.o $(bin)SCT_Monitoring_load.o
+$(SCT_Monitoringlib) :: $(bin)SCTErrMonTool.o $(bin)SCTHitEffMonTool.o $(bin)SCTHitsNoiseMonTool.o $(bin)SCTLorentzMonTool.o $(bin)SCTMotherTrigMonTool.o $(bin)SCTRatioNoiseMonTool.o $(bin)SCTSummaryMonTool.o $(bin)SCTTracksMonTool.o $(bin)SCT_Monitoring_entries.o $(bin)SCT_Monitoring_load.o
 	$(lib_echo) "static library $@"
 	$(lib_silent) cd $(bin); \
 	  $(ar) $(SCT_Monitoringlib) $?
@@ -130,9 +130,9 @@ $(SCT_Monitoringlib) :: $(bin)SCTRatioNoiseMonTool.o $(bin)SCTLorentzMonTool.o $
 # while the stamp was created (error??) 
 #
 
-$(SCT_Monitoringlibname).$(shlibsuffix) :: $(bin)SCTRatioNoiseMonTool.o $(bin)SCTLorentzMonTool.o $(bin)SCTSummaryMonTool.o $(bin)SCTMotherTrigMonTool.o $(bin)SCTHitEffMonTool.o $(bin)SCTHitsNoiseMonTool.o $(bin)SCTTracksMonTool.o $(bin)SCTErrMonTool.o $(bin)SCT_Monitoring_entries.o $(bin)SCT_Monitoring_load.o $(use_requirements) $(SCT_Monitoringstamps)
+$(SCT_Monitoringlibname).$(shlibsuffix) :: $(bin)SCTErrMonTool.o $(bin)SCTHitEffMonTool.o $(bin)SCTHitsNoiseMonTool.o $(bin)SCTLorentzMonTool.o $(bin)SCTMotherTrigMonTool.o $(bin)SCTRatioNoiseMonTool.o $(bin)SCTSummaryMonTool.o $(bin)SCTTracksMonTool.o $(bin)SCT_Monitoring_entries.o $(bin)SCT_Monitoring_load.o $(use_requirements) $(SCT_Monitoringstamps)
 	$(lib_echo) "shared library $@"
-	$(lib_silent) $(shlibbuilder) $(shlibflags) -o $@ $(bin)SCTRatioNoiseMonTool.o $(bin)SCTLorentzMonTool.o $(bin)SCTSummaryMonTool.o $(bin)SCTMotherTrigMonTool.o $(bin)SCTHitEffMonTool.o $(bin)SCTHitsNoiseMonTool.o $(bin)SCTTracksMonTool.o $(bin)SCTErrMonTool.o $(bin)SCT_Monitoring_entries.o $(bin)SCT_Monitoring_load.o $(SCT_Monitoring_shlibflags)
+	$(lib_silent) $(shlibbuilder) $(shlibflags) -o $@ $(bin)SCTErrMonTool.o $(bin)SCTHitEffMonTool.o $(bin)SCTHitsNoiseMonTool.o $(bin)SCTLorentzMonTool.o $(bin)SCTMotherTrigMonTool.o $(bin)SCTRatioNoiseMonTool.o $(bin)SCTSummaryMonTool.o $(bin)SCTTracksMonTool.o $(bin)SCT_Monitoring_entries.o $(bin)SCT_Monitoring_load.o $(SCT_Monitoring_shlibflags)
 	$(lib_silent) cat /dev/null >$(SCT_Monitoringstamp) && \
 	  cat /dev/null >$(SCT_Monitoringshstamp)
 
@@ -143,8 +143,8 @@ $(SCT_Monitoringshstamp) :: $(SCT_Monitoringlibname).$(shlibsuffix)
 
 SCT_Monitoringclean ::
 	$(cleanup_echo) objects SCT_Monitoring
-	$(cleanup_silent) /bin/rm -f $(bin)SCTRatioNoiseMonTool.o $(bin)SCTLorentzMonTool.o $(bin)SCTSummaryMonTool.o $(bin)SCTMotherTrigMonTool.o $(bin)SCTHitEffMonTool.o $(bin)SCTHitsNoiseMonTool.o $(bin)SCTTracksMonTool.o $(bin)SCTErrMonTool.o $(bin)SCT_Monitoring_entries.o $(bin)SCT_Monitoring_load.o
-	$(cleanup_silent) /bin/rm -f $(patsubst %.o,%.d,$(bin)SCTRatioNoiseMonTool.o $(bin)SCTLorentzMonTool.o $(bin)SCTSummaryMonTool.o $(bin)SCTMotherTrigMonTool.o $(bin)SCTHitEffMonTool.o $(bin)SCTHitsNoiseMonTool.o $(bin)SCTTracksMonTool.o $(bin)SCTErrMonTool.o $(bin)SCT_Monitoring_entries.o $(bin)SCT_Monitoring_load.o) $(patsubst %.o,%.dep,$(bin)SCTRatioNoiseMonTool.o $(bin)SCTLorentzMonTool.o $(bin)SCTSummaryMonTool.o $(bin)SCTMotherTrigMonTool.o $(bin)SCTHitEffMonTool.o $(bin)SCTHitsNoiseMonTool.o $(bin)SCTTracksMonTool.o $(bin)SCTErrMonTool.o $(bin)SCT_Monitoring_entries.o $(bin)SCT_Monitoring_load.o) $(patsubst %.o,%.d.stamp,$(bin)SCTRatioNoiseMonTool.o $(bin)SCTLorentzMonTool.o $(bin)SCTSummaryMonTool.o $(bin)SCTMotherTrigMonTool.o $(bin)SCTHitEffMonTool.o $(bin)SCTHitsNoiseMonTool.o $(bin)SCTTracksMonTool.o $(bin)SCTErrMonTool.o $(bin)SCT_Monitoring_entries.o $(bin)SCT_Monitoring_load.o)
+	$(cleanup_silent) /bin/rm -f $(bin)SCTErrMonTool.o $(bin)SCTHitEffMonTool.o $(bin)SCTHitsNoiseMonTool.o $(bin)SCTLorentzMonTool.o $(bin)SCTMotherTrigMonTool.o $(bin)SCTRatioNoiseMonTool.o $(bin)SCTSummaryMonTool.o $(bin)SCTTracksMonTool.o $(bin)SCT_Monitoring_entries.o $(bin)SCT_Monitoring_load.o
+	$(cleanup_silent) /bin/rm -f $(patsubst %.o,%.d,$(bin)SCTErrMonTool.o $(bin)SCTHitEffMonTool.o $(bin)SCTHitsNoiseMonTool.o $(bin)SCTLorentzMonTool.o $(bin)SCTMotherTrigMonTool.o $(bin)SCTRatioNoiseMonTool.o $(bin)SCTSummaryMonTool.o $(bin)SCTTracksMonTool.o $(bin)SCT_Monitoring_entries.o $(bin)SCT_Monitoring_load.o) $(patsubst %.o,%.dep,$(bin)SCTErrMonTool.o $(bin)SCTHitEffMonTool.o $(bin)SCTHitsNoiseMonTool.o $(bin)SCTLorentzMonTool.o $(bin)SCTMotherTrigMonTool.o $(bin)SCTRatioNoiseMonTool.o $(bin)SCTSummaryMonTool.o $(bin)SCTTracksMonTool.o $(bin)SCT_Monitoring_entries.o $(bin)SCT_Monitoring_load.o) $(patsubst %.o,%.d.stamp,$(bin)SCTErrMonTool.o $(bin)SCTHitEffMonTool.o $(bin)SCTHitsNoiseMonTool.o $(bin)SCTLorentzMonTool.o $(bin)SCTMotherTrigMonTool.o $(bin)SCTRatioNoiseMonTool.o $(bin)SCTSummaryMonTool.o $(bin)SCTTracksMonTool.o $(bin)SCT_Monitoring_entries.o $(bin)SCT_Monitoring_load.o)
 	$(cleanup_silent) cd $(bin); /bin/rm -rf SCT_Monitoring_deps SCT_Monitoring_dependencies.make
 
 #-----------------------------------------------------------------
@@ -195,116 +195,26 @@ ifneq (-MMD -MP -MF $*.d -MQ $@,)
 
 ifneq ($(MAKECMDGOALS),SCT_Monitoringclean)
 ifneq ($(MAKECMDGOALS),uninstall)
--include $(bin)$(binobj)SCTRatioNoiseMonTool.d
+-include $(bin)$(binobj)SCTErrMonTool.d
 
-$(bin)$(binobj)SCTRatioNoiseMonTool.d :
+$(bin)$(binobj)SCTErrMonTool.d :
 
-$(bin)$(binobj)SCTRatioNoiseMonTool.o : $(cmt_final_setup_SCT_Monitoring)
+$(bin)$(binobj)SCTErrMonTool.o : $(cmt_final_setup_SCT_Monitoring)
 
-$(bin)$(binobj)SCTRatioNoiseMonTool.o : $(src)SCTRatioNoiseMonTool.cxx
-	$(cpp_echo) $(src)SCTRatioNoiseMonTool.cxx
-	$(cpp_silent) $(cppcomp) -MMD -MP -MF $*.d -MQ $@ -o $@ $(use_pp_cppflags) $(SCT_Monitoring_pp_cppflags) $(lib_SCT_Monitoring_pp_cppflags) $(SCTRatioNoiseMonTool_pp_cppflags) $(use_cppflags) $(SCT_Monitoring_cppflags) $(lib_SCT_Monitoring_cppflags) $(SCTRatioNoiseMonTool_cppflags) $(SCTRatioNoiseMonTool_cxx_cppflags)  $(src)SCTRatioNoiseMonTool.cxx
+$(bin)$(binobj)SCTErrMonTool.o : $(src)SCTErrMonTool.cxx
+	$(cpp_echo) $(src)SCTErrMonTool.cxx
+	$(cpp_silent) $(cppcomp) -MMD -MP -MF $*.d -MQ $@ -o $@ $(use_pp_cppflags) $(SCT_Monitoring_pp_cppflags) $(lib_SCT_Monitoring_pp_cppflags) $(SCTErrMonTool_pp_cppflags) $(use_cppflags) $(SCT_Monitoring_cppflags) $(lib_SCT_Monitoring_cppflags) $(SCTErrMonTool_cppflags) $(SCTErrMonTool_cxx_cppflags)  $(src)SCTErrMonTool.cxx
 endif
 endif
 
 else
-$(bin)SCT_Monitoring_dependencies.make : $(SCTRatioNoiseMonTool_cxx_dependencies)
+$(bin)SCT_Monitoring_dependencies.make : $(SCTErrMonTool_cxx_dependencies)
 
-$(bin)SCT_Monitoring_dependencies.make : $(src)SCTRatioNoiseMonTool.cxx
+$(bin)SCT_Monitoring_dependencies.make : $(src)SCTErrMonTool.cxx
 
-$(bin)$(binobj)SCTRatioNoiseMonTool.o : $(SCTRatioNoiseMonTool_cxx_dependencies)
-	$(cpp_echo) $(src)SCTRatioNoiseMonTool.cxx
-	$(cpp_silent) $(cppcomp) -o $@ $(use_pp_cppflags) $(SCT_Monitoring_pp_cppflags) $(lib_SCT_Monitoring_pp_cppflags) $(SCTRatioNoiseMonTool_pp_cppflags) $(use_cppflags) $(SCT_Monitoring_cppflags) $(lib_SCT_Monitoring_cppflags) $(SCTRatioNoiseMonTool_cppflags) $(SCTRatioNoiseMonTool_cxx_cppflags)  $(src)SCTRatioNoiseMonTool.cxx
-
-endif
-
-#-- end of cpp_library ------------------
-#-- start of cpp_library -----------------
-
-ifneq (-MMD -MP -MF $*.d -MQ $@,)
-
-ifneq ($(MAKECMDGOALS),SCT_Monitoringclean)
-ifneq ($(MAKECMDGOALS),uninstall)
--include $(bin)$(binobj)SCTLorentzMonTool.d
-
-$(bin)$(binobj)SCTLorentzMonTool.d :
-
-$(bin)$(binobj)SCTLorentzMonTool.o : $(cmt_final_setup_SCT_Monitoring)
-
-$(bin)$(binobj)SCTLorentzMonTool.o : $(src)SCTLorentzMonTool.cxx
-	$(cpp_echo) $(src)SCTLorentzMonTool.cxx
-	$(cpp_silent) $(cppcomp) -MMD -MP -MF $*.d -MQ $@ -o $@ $(use_pp_cppflags) $(SCT_Monitoring_pp_cppflags) $(lib_SCT_Monitoring_pp_cppflags) $(SCTLorentzMonTool_pp_cppflags) $(use_cppflags) $(SCT_Monitoring_cppflags) $(lib_SCT_Monitoring_cppflags) $(SCTLorentzMonTool_cppflags) $(SCTLorentzMonTool_cxx_cppflags)  $(src)SCTLorentzMonTool.cxx
-endif
-endif
-
-else
-$(bin)SCT_Monitoring_dependencies.make : $(SCTLorentzMonTool_cxx_dependencies)
-
-$(bin)SCT_Monitoring_dependencies.make : $(src)SCTLorentzMonTool.cxx
-
-$(bin)$(binobj)SCTLorentzMonTool.o : $(SCTLorentzMonTool_cxx_dependencies)
-	$(cpp_echo) $(src)SCTLorentzMonTool.cxx
-	$(cpp_silent) $(cppcomp) -o $@ $(use_pp_cppflags) $(SCT_Monitoring_pp_cppflags) $(lib_SCT_Monitoring_pp_cppflags) $(SCTLorentzMonTool_pp_cppflags) $(use_cppflags) $(SCT_Monitoring_cppflags) $(lib_SCT_Monitoring_cppflags) $(SCTLorentzMonTool_cppflags) $(SCTLorentzMonTool_cxx_cppflags)  $(src)SCTLorentzMonTool.cxx
-
-endif
-
-#-- end of cpp_library ------------------
-#-- start of cpp_library -----------------
-
-ifneq (-MMD -MP -MF $*.d -MQ $@,)
-
-ifneq ($(MAKECMDGOALS),SCT_Monitoringclean)
-ifneq ($(MAKECMDGOALS),uninstall)
--include $(bin)$(binobj)SCTSummaryMonTool.d
-
-$(bin)$(binobj)SCTSummaryMonTool.d :
-
-$(bin)$(binobj)SCTSummaryMonTool.o : $(cmt_final_setup_SCT_Monitoring)
-
-$(bin)$(binobj)SCTSummaryMonTool.o : $(src)SCTSummaryMonTool.cxx
-	$(cpp_echo) $(src)SCTSummaryMonTool.cxx
-	$(cpp_silent) $(cppcomp) -MMD -MP -MF $*.d -MQ $@ -o $@ $(use_pp_cppflags) $(SCT_Monitoring_pp_cppflags) $(lib_SCT_Monitoring_pp_cppflags) $(SCTSummaryMonTool_pp_cppflags) $(use_cppflags) $(SCT_Monitoring_cppflags) $(lib_SCT_Monitoring_cppflags) $(SCTSummaryMonTool_cppflags) $(SCTSummaryMonTool_cxx_cppflags)  $(src)SCTSummaryMonTool.cxx
-endif
-endif
-
-else
-$(bin)SCT_Monitoring_dependencies.make : $(SCTSummaryMonTool_cxx_dependencies)
-
-$(bin)SCT_Monitoring_dependencies.make : $(src)SCTSummaryMonTool.cxx
-
-$(bin)$(binobj)SCTSummaryMonTool.o : $(SCTSummaryMonTool_cxx_dependencies)
-	$(cpp_echo) $(src)SCTSummaryMonTool.cxx
-	$(cpp_silent) $(cppcomp) -o $@ $(use_pp_cppflags) $(SCT_Monitoring_pp_cppflags) $(lib_SCT_Monitoring_pp_cppflags) $(SCTSummaryMonTool_pp_cppflags) $(use_cppflags) $(SCT_Monitoring_cppflags) $(lib_SCT_Monitoring_cppflags) $(SCTSummaryMonTool_cppflags) $(SCTSummaryMonTool_cxx_cppflags)  $(src)SCTSummaryMonTool.cxx
-
-endif
-
-#-- end of cpp_library ------------------
-#-- start of cpp_library -----------------
-
-ifneq (-MMD -MP -MF $*.d -MQ $@,)
-
-ifneq ($(MAKECMDGOALS),SCT_Monitoringclean)
-ifneq ($(MAKECMDGOALS),uninstall)
--include $(bin)$(binobj)SCTMotherTrigMonTool.d
-
-$(bin)$(binobj)SCTMotherTrigMonTool.d :
-
-$(bin)$(binobj)SCTMotherTrigMonTool.o : $(cmt_final_setup_SCT_Monitoring)
-
-$(bin)$(binobj)SCTMotherTrigMonTool.o : $(src)SCTMotherTrigMonTool.cxx
-	$(cpp_echo) $(src)SCTMotherTrigMonTool.cxx
-	$(cpp_silent) $(cppcomp) -MMD -MP -MF $*.d -MQ $@ -o $@ $(use_pp_cppflags) $(SCT_Monitoring_pp_cppflags) $(lib_SCT_Monitoring_pp_cppflags) $(SCTMotherTrigMonTool_pp_cppflags) $(use_cppflags) $(SCT_Monitoring_cppflags) $(lib_SCT_Monitoring_cppflags) $(SCTMotherTrigMonTool_cppflags) $(SCTMotherTrigMonTool_cxx_cppflags)  $(src)SCTMotherTrigMonTool.cxx
-endif
-endif
-
-else
-$(bin)SCT_Monitoring_dependencies.make : $(SCTMotherTrigMonTool_cxx_dependencies)
-
-$(bin)SCT_Monitoring_dependencies.make : $(src)SCTMotherTrigMonTool.cxx
-
-$(bin)$(binobj)SCTMotherTrigMonTool.o : $(SCTMotherTrigMonTool_cxx_dependencies)
-	$(cpp_echo) $(src)SCTMotherTrigMonTool.cxx
-	$(cpp_silent) $(cppcomp) -o $@ $(use_pp_cppflags) $(SCT_Monitoring_pp_cppflags) $(lib_SCT_Monitoring_pp_cppflags) $(SCTMotherTrigMonTool_pp_cppflags) $(use_cppflags) $(SCT_Monitoring_cppflags) $(lib_SCT_Monitoring_cppflags) $(SCTMotherTrigMonTool_cppflags) $(SCTMotherTrigMonTool_cxx_cppflags)  $(src)SCTMotherTrigMonTool.cxx
+$(bin)$(binobj)SCTErrMonTool.o : $(SCTErrMonTool_cxx_dependencies)
+	$(cpp_echo) $(src)SCTErrMonTool.cxx
+	$(cpp_silent) $(cppcomp) -o $@ $(use_pp_cppflags) $(SCT_Monitoring_pp_cppflags) $(lib_SCT_Monitoring_pp_cppflags) $(SCTErrMonTool_pp_cppflags) $(use_cppflags) $(SCT_Monitoring_cppflags) $(lib_SCT_Monitoring_cppflags) $(SCTErrMonTool_cppflags) $(SCTErrMonTool_cxx_cppflags)  $(src)SCTErrMonTool.cxx
 
 endif
 
@@ -375,6 +285,126 @@ ifneq (-MMD -MP -MF $*.d -MQ $@,)
 
 ifneq ($(MAKECMDGOALS),SCT_Monitoringclean)
 ifneq ($(MAKECMDGOALS),uninstall)
+-include $(bin)$(binobj)SCTLorentzMonTool.d
+
+$(bin)$(binobj)SCTLorentzMonTool.d :
+
+$(bin)$(binobj)SCTLorentzMonTool.o : $(cmt_final_setup_SCT_Monitoring)
+
+$(bin)$(binobj)SCTLorentzMonTool.o : $(src)SCTLorentzMonTool.cxx
+	$(cpp_echo) $(src)SCTLorentzMonTool.cxx
+	$(cpp_silent) $(cppcomp) -MMD -MP -MF $*.d -MQ $@ -o $@ $(use_pp_cppflags) $(SCT_Monitoring_pp_cppflags) $(lib_SCT_Monitoring_pp_cppflags) $(SCTLorentzMonTool_pp_cppflags) $(use_cppflags) $(SCT_Monitoring_cppflags) $(lib_SCT_Monitoring_cppflags) $(SCTLorentzMonTool_cppflags) $(SCTLorentzMonTool_cxx_cppflags)  $(src)SCTLorentzMonTool.cxx
+endif
+endif
+
+else
+$(bin)SCT_Monitoring_dependencies.make : $(SCTLorentzMonTool_cxx_dependencies)
+
+$(bin)SCT_Monitoring_dependencies.make : $(src)SCTLorentzMonTool.cxx
+
+$(bin)$(binobj)SCTLorentzMonTool.o : $(SCTLorentzMonTool_cxx_dependencies)
+	$(cpp_echo) $(src)SCTLorentzMonTool.cxx
+	$(cpp_silent) $(cppcomp) -o $@ $(use_pp_cppflags) $(SCT_Monitoring_pp_cppflags) $(lib_SCT_Monitoring_pp_cppflags) $(SCTLorentzMonTool_pp_cppflags) $(use_cppflags) $(SCT_Monitoring_cppflags) $(lib_SCT_Monitoring_cppflags) $(SCTLorentzMonTool_cppflags) $(SCTLorentzMonTool_cxx_cppflags)  $(src)SCTLorentzMonTool.cxx
+
+endif
+
+#-- end of cpp_library ------------------
+#-- start of cpp_library -----------------
+
+ifneq (-MMD -MP -MF $*.d -MQ $@,)
+
+ifneq ($(MAKECMDGOALS),SCT_Monitoringclean)
+ifneq ($(MAKECMDGOALS),uninstall)
+-include $(bin)$(binobj)SCTMotherTrigMonTool.d
+
+$(bin)$(binobj)SCTMotherTrigMonTool.d :
+
+$(bin)$(binobj)SCTMotherTrigMonTool.o : $(cmt_final_setup_SCT_Monitoring)
+
+$(bin)$(binobj)SCTMotherTrigMonTool.o : $(src)SCTMotherTrigMonTool.cxx
+	$(cpp_echo) $(src)SCTMotherTrigMonTool.cxx
+	$(cpp_silent) $(cppcomp) -MMD -MP -MF $*.d -MQ $@ -o $@ $(use_pp_cppflags) $(SCT_Monitoring_pp_cppflags) $(lib_SCT_Monitoring_pp_cppflags) $(SCTMotherTrigMonTool_pp_cppflags) $(use_cppflags) $(SCT_Monitoring_cppflags) $(lib_SCT_Monitoring_cppflags) $(SCTMotherTrigMonTool_cppflags) $(SCTMotherTrigMonTool_cxx_cppflags)  $(src)SCTMotherTrigMonTool.cxx
+endif
+endif
+
+else
+$(bin)SCT_Monitoring_dependencies.make : $(SCTMotherTrigMonTool_cxx_dependencies)
+
+$(bin)SCT_Monitoring_dependencies.make : $(src)SCTMotherTrigMonTool.cxx
+
+$(bin)$(binobj)SCTMotherTrigMonTool.o : $(SCTMotherTrigMonTool_cxx_dependencies)
+	$(cpp_echo) $(src)SCTMotherTrigMonTool.cxx
+	$(cpp_silent) $(cppcomp) -o $@ $(use_pp_cppflags) $(SCT_Monitoring_pp_cppflags) $(lib_SCT_Monitoring_pp_cppflags) $(SCTMotherTrigMonTool_pp_cppflags) $(use_cppflags) $(SCT_Monitoring_cppflags) $(lib_SCT_Monitoring_cppflags) $(SCTMotherTrigMonTool_cppflags) $(SCTMotherTrigMonTool_cxx_cppflags)  $(src)SCTMotherTrigMonTool.cxx
+
+endif
+
+#-- end of cpp_library ------------------
+#-- start of cpp_library -----------------
+
+ifneq (-MMD -MP -MF $*.d -MQ $@,)
+
+ifneq ($(MAKECMDGOALS),SCT_Monitoringclean)
+ifneq ($(MAKECMDGOALS),uninstall)
+-include $(bin)$(binobj)SCTRatioNoiseMonTool.d
+
+$(bin)$(binobj)SCTRatioNoiseMonTool.d :
+
+$(bin)$(binobj)SCTRatioNoiseMonTool.o : $(cmt_final_setup_SCT_Monitoring)
+
+$(bin)$(binobj)SCTRatioNoiseMonTool.o : $(src)SCTRatioNoiseMonTool.cxx
+	$(cpp_echo) $(src)SCTRatioNoiseMonTool.cxx
+	$(cpp_silent) $(cppcomp) -MMD -MP -MF $*.d -MQ $@ -o $@ $(use_pp_cppflags) $(SCT_Monitoring_pp_cppflags) $(lib_SCT_Monitoring_pp_cppflags) $(SCTRatioNoiseMonTool_pp_cppflags) $(use_cppflags) $(SCT_Monitoring_cppflags) $(lib_SCT_Monitoring_cppflags) $(SCTRatioNoiseMonTool_cppflags) $(SCTRatioNoiseMonTool_cxx_cppflags)  $(src)SCTRatioNoiseMonTool.cxx
+endif
+endif
+
+else
+$(bin)SCT_Monitoring_dependencies.make : $(SCTRatioNoiseMonTool_cxx_dependencies)
+
+$(bin)SCT_Monitoring_dependencies.make : $(src)SCTRatioNoiseMonTool.cxx
+
+$(bin)$(binobj)SCTRatioNoiseMonTool.o : $(SCTRatioNoiseMonTool_cxx_dependencies)
+	$(cpp_echo) $(src)SCTRatioNoiseMonTool.cxx
+	$(cpp_silent) $(cppcomp) -o $@ $(use_pp_cppflags) $(SCT_Monitoring_pp_cppflags) $(lib_SCT_Monitoring_pp_cppflags) $(SCTRatioNoiseMonTool_pp_cppflags) $(use_cppflags) $(SCT_Monitoring_cppflags) $(lib_SCT_Monitoring_cppflags) $(SCTRatioNoiseMonTool_cppflags) $(SCTRatioNoiseMonTool_cxx_cppflags)  $(src)SCTRatioNoiseMonTool.cxx
+
+endif
+
+#-- end of cpp_library ------------------
+#-- start of cpp_library -----------------
+
+ifneq (-MMD -MP -MF $*.d -MQ $@,)
+
+ifneq ($(MAKECMDGOALS),SCT_Monitoringclean)
+ifneq ($(MAKECMDGOALS),uninstall)
+-include $(bin)$(binobj)SCTSummaryMonTool.d
+
+$(bin)$(binobj)SCTSummaryMonTool.d :
+
+$(bin)$(binobj)SCTSummaryMonTool.o : $(cmt_final_setup_SCT_Monitoring)
+
+$(bin)$(binobj)SCTSummaryMonTool.o : $(src)SCTSummaryMonTool.cxx
+	$(cpp_echo) $(src)SCTSummaryMonTool.cxx
+	$(cpp_silent) $(cppcomp) -MMD -MP -MF $*.d -MQ $@ -o $@ $(use_pp_cppflags) $(SCT_Monitoring_pp_cppflags) $(lib_SCT_Monitoring_pp_cppflags) $(SCTSummaryMonTool_pp_cppflags) $(use_cppflags) $(SCT_Monitoring_cppflags) $(lib_SCT_Monitoring_cppflags) $(SCTSummaryMonTool_cppflags) $(SCTSummaryMonTool_cxx_cppflags)  $(src)SCTSummaryMonTool.cxx
+endif
+endif
+
+else
+$(bin)SCT_Monitoring_dependencies.make : $(SCTSummaryMonTool_cxx_dependencies)
+
+$(bin)SCT_Monitoring_dependencies.make : $(src)SCTSummaryMonTool.cxx
+
+$(bin)$(binobj)SCTSummaryMonTool.o : $(SCTSummaryMonTool_cxx_dependencies)
+	$(cpp_echo) $(src)SCTSummaryMonTool.cxx
+	$(cpp_silent) $(cppcomp) -o $@ $(use_pp_cppflags) $(SCT_Monitoring_pp_cppflags) $(lib_SCT_Monitoring_pp_cppflags) $(SCTSummaryMonTool_pp_cppflags) $(use_cppflags) $(SCT_Monitoring_cppflags) $(lib_SCT_Monitoring_cppflags) $(SCTSummaryMonTool_cppflags) $(SCTSummaryMonTool_cxx_cppflags)  $(src)SCTSummaryMonTool.cxx
+
+endif
+
+#-- end of cpp_library ------------------
+#-- start of cpp_library -----------------
+
+ifneq (-MMD -MP -MF $*.d -MQ $@,)
+
+ifneq ($(MAKECMDGOALS),SCT_Monitoringclean)
+ifneq ($(MAKECMDGOALS),uninstall)
 -include $(bin)$(binobj)SCTTracksMonTool.d
 
 $(bin)$(binobj)SCTTracksMonTool.d :
@@ -395,36 +425,6 @@ $(bin)SCT_Monitoring_dependencies.make : $(src)SCTTracksMonTool.cxx
 $(bin)$(binobj)SCTTracksMonTool.o : $(SCTTracksMonTool_cxx_dependencies)
 	$(cpp_echo) $(src)SCTTracksMonTool.cxx
 	$(cpp_silent) $(cppcomp) -o $@ $(use_pp_cppflags) $(SCT_Monitoring_pp_cppflags) $(lib_SCT_Monitoring_pp_cppflags) $(SCTTracksMonTool_pp_cppflags) $(use_cppflags) $(SCT_Monitoring_cppflags) $(lib_SCT_Monitoring_cppflags) $(SCTTracksMonTool_cppflags) $(SCTTracksMonTool_cxx_cppflags)  $(src)SCTTracksMonTool.cxx
-
-endif
-
-#-- end of cpp_library ------------------
-#-- start of cpp_library -----------------
-
-ifneq (-MMD -MP -MF $*.d -MQ $@,)
-
-ifneq ($(MAKECMDGOALS),SCT_Monitoringclean)
-ifneq ($(MAKECMDGOALS),uninstall)
--include $(bin)$(binobj)SCTErrMonTool.d
-
-$(bin)$(binobj)SCTErrMonTool.d :
-
-$(bin)$(binobj)SCTErrMonTool.o : $(cmt_final_setup_SCT_Monitoring)
-
-$(bin)$(binobj)SCTErrMonTool.o : $(src)SCTErrMonTool.cxx
-	$(cpp_echo) $(src)SCTErrMonTool.cxx
-	$(cpp_silent) $(cppcomp) -MMD -MP -MF $*.d -MQ $@ -o $@ $(use_pp_cppflags) $(SCT_Monitoring_pp_cppflags) $(lib_SCT_Monitoring_pp_cppflags) $(SCTErrMonTool_pp_cppflags) $(use_cppflags) $(SCT_Monitoring_cppflags) $(lib_SCT_Monitoring_cppflags) $(SCTErrMonTool_cppflags) $(SCTErrMonTool_cxx_cppflags)  $(src)SCTErrMonTool.cxx
-endif
-endif
-
-else
-$(bin)SCT_Monitoring_dependencies.make : $(SCTErrMonTool_cxx_dependencies)
-
-$(bin)SCT_Monitoring_dependencies.make : $(src)SCTErrMonTool.cxx
-
-$(bin)$(binobj)SCTErrMonTool.o : $(SCTErrMonTool_cxx_dependencies)
-	$(cpp_echo) $(src)SCTErrMonTool.cxx
-	$(cpp_silent) $(cppcomp) -o $@ $(use_pp_cppflags) $(SCT_Monitoring_pp_cppflags) $(lib_SCT_Monitoring_pp_cppflags) $(SCTErrMonTool_pp_cppflags) $(use_cppflags) $(SCT_Monitoring_cppflags) $(lib_SCT_Monitoring_cppflags) $(SCTErrMonTool_cppflags) $(SCTErrMonTool_cxx_cppflags)  $(src)SCTErrMonTool.cxx
 
 endif
 
