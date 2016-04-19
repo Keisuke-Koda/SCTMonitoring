@@ -1,8 +1,0 @@
-libSCT_Monitoring.so:SCTErrMonTool
-libSCT_Monitoring.so:SCTHitEffMonTool
-libSCT_Monitoring.so:SCTHitsNoiseMonTool
-libSCT_Monitoring.so:SCTLorentzMonTool
-libSCT_Monitoring.so:SCTMotherTrigMonTool
-libSCT_Monitoring.so:SCTRatioNoiseMonTool
-libSCT_Monitoring.so:SCTSummaryMonTool
-libSCT_Monitoring.so:SCTTracksMonTool

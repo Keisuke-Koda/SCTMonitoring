@@ -3,7 +3,7 @@
 #====================================
 #  Document check_install_runtime
 #
-#   Generated Tue Apr 12 11:41:43 2016  by kkoda
+#   Generated Tue Apr 12 12:00:48 2016  by kkoda
 #
 #====================================
 
@@ -107,7 +107,7 @@ check_install_runtime :: $(check_install_runtimeactionstamp)
 
 #$(check_install_runtimeactionstamp) :: $(check_install_runtime_dependencies)
 $(check_install_runtimeactionstamp) ::
-	$(silent) /cvmfs/atlas.cern.ch/repo/sw/software/x86_64-slc6-gcc49-opt/20.7.5/AtlasCore/20.7.5/External/ExternalPolicy/cmt/atlas_check_installations.sh -files=' -s=../share -s=../share *.dat  ' -installdir=/afs/cern.ch/user/d/dhayakaw/private/OfflineDQ/SCTMonitoring/InstallArea/share -level=
+	$(silent) /cvmfs/atlas.cern.ch/repo/sw/software/x86_64-slc6-gcc49-opt/20.7.5/AtlasCore/20.7.5/External/ExternalPolicy/cmt/atlas_check_installations.sh -files=' -s=../share -s=../share *.dat  ' -installdir=/afs/cern.ch/user/k/kkoda/private/SCTMonitoring/InstallArea/share -level=
 	$(silent) cat /dev/null > $(check_install_runtimeactionstamp)
 #	@echo ok > $(check_install_runtimeactionstamp)
 
@@ -118,7 +118,7 @@ else
 
 #check_install_runtime :: $(check_install_runtime_dependencies)
 check_install_runtime ::
-	$(silent) /cvmfs/atlas.cern.ch/repo/sw/software/x86_64-slc6-gcc49-opt/20.7.5/AtlasCore/20.7.5/External/ExternalPolicy/cmt/atlas_check_installations.sh -files=' -s=../share -s=../share *.dat  ' -installdir=/afs/cern.ch/user/d/dhayakaw/private/OfflineDQ/SCTMonitoring/InstallArea/share -level=
+	$(silent) /cvmfs/atlas.cern.ch/repo/sw/software/x86_64-slc6-gcc49-opt/20.7.5/AtlasCore/20.7.5/External/ExternalPolicy/cmt/atlas_check_installations.sh -files=' -s=../share -s=../share *.dat  ' -installdir=/afs/cern.ch/user/k/kkoda/private/SCTMonitoring/InstallArea/share -level=
 
 endif
 

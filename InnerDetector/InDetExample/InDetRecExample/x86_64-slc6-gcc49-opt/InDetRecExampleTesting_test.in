@@ -1,8 +1,0 @@
-document athenarun_launcher InDetRecExampleTesting_test -group=check athenarun_exe=athena.py athenarun_opt=../share/jobOptions.py athenarun_pre=logfile=InDetRecExampleTesting.log;'"'" "'"'.'"'" "'"'../test/script_pre_check.sh athenarun_out='"'" "'"'>'"'" "'"'InDetRecExampleTesting.log'"'" "'"'2>&1 athenarun_post=sh'"'" "'"'../test/script_post_check.sh
-make_fragment make_header /cvmfs/atlas.cern.ch/repo/sw/software/x86_64-slc6-gcc49-opt/20.7.5/CMT/v1r25p20140131/mgr/fragments/make_header
-make_fragment dependencies /cvmfs/atlas.cern.ch/repo/sw/software/x86_64-slc6-gcc49-opt/20.7.5/AtlasCore/20.7.5/AtlasPolicy/cmt/fragments/dependencies
-make_fragment cleanup_header /cvmfs/atlas.cern.ch/repo/sw/software/x86_64-slc6-gcc49-opt/20.7.5/AtlasCore/20.7.5/AtlasPolicy/cmt/fragments/cleanup_header
-make_fragment athenarun_launcher -header=athenarun_launcher_header /cvmfs/atlas.cern.ch/repo/sw/software/x86_64-slc6-gcc49-opt/20.7.5/AtlasCore/20.7.5/TestPolicy/cmt/fragments/athenarun_launcher
-make_fragment athenarun_launcher_header /cvmfs/atlas.cern.ch/repo/sw/software/x86_64-slc6-gcc49-opt/20.7.5/AtlasCore/20.7.5/TestPolicy/cmt/fragments/athenarun_launcher_header
-make_fragment document_header /cvmfs/atlas.cern.ch/repo/sw/software/x86_64-slc6-gcc49-opt/20.7.5/CMT/v1r25p20140131/mgr/fragments/document_header
-make_fragment dependency /cvmfs/atlas.cern.ch/repo/sw/software/x86_64-slc6-gcc49-opt/20.7.5/CMT/v1r25p20140131/mgr/fragments/dependency

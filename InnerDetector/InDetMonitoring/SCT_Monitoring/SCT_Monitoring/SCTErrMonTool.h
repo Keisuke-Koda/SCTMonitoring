@@ -20,6 +20,9 @@
 #include "SCT_ConditionsServices/ISCT_FlaggedConditionSvc.h"
 #include "SCT_ConditionsServices/ISCT_ConfigurationConditionsSvc.h"
 #include "SCT_Monitoring/SCT_MonitoringNumbers.h"
+//
+#include "Identifier/Identifier.h"
+#include "Identifier/IdentifierHash.h"
 
 /** Forward declarations*/
 class IInterface;
@@ -38,6 +41,11 @@ class TString;
 ///Concrete monitoring tool derived from MonitorToolBase
 class SCTErrMonTool : public ManagedMonitorToolBase
 {
+		// First pair is eta and second pair is phi.
+		// First element of pair is minimum second is maximum.
+		typedef std::pair< std::pair<double, double>, std::pair<double, double> > moduleGeo_t; 
+		typedef std::map< IdentifierHash, moduleGeo_t > geoContainer_t;
+		typedef std::map< Identifier, moduleGeo_t > geoContainerPure_t;
   public:
 	  SCTErrMonTool(const std::string & type,const std::string & name,const IInterface* parent);
 	  virtual ~SCTErrMonTool();
@@ -302,6 +310,11 @@ class SCTErrMonTool : public ManagedMonitorToolBase
 
   Prof2_t
     prof2Factory(const std::string & name, const std::string & title, const unsigned int&, VecProf2_t & storageVector);
+
+		void FillModule( moduleGeo_t module, TH2F * histo );
+		const unsigned int c_nBinsEta;
+		const float 			 c_rangeEta;
+		const unsigned int c_nBinsPhi;
 };
 
 #endif

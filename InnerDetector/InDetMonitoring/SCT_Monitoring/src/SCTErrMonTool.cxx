@@ -279,10 +279,13 @@ SCTErrMonTool::SCTErrMonTool(const std::string & type,const std::string & name,c
     m_thistSvc("THistSvc",name),
     m_byteStreamErrSvc("SCT_ByteStreamErrorsSvc",name),
     m_checkBadModules(true),
-    m_ignore_RDO_cut_online(true)
+    m_ignore_RDO_cut_online(true),
     //m_errThreshold{}, property
     //m_effThreshold{}, property
     //m_noiseThreshold{}, property
+		c_nBinsEta( 200 ),
+		c_rangeEta( 2.5 ),
+		c_nBinsPhi( 200 )
 {
 /** sroe 3 Sept 2015:
   histoPathBase is declared as a property in the base class, assigned to m_path
@@ -2178,4 +2181,63 @@ SCTErrMonTool::prof2Factory(const std::string & name, const std::string & title,
     moduleinEndcapA = true;}
     return moduleinEndcapA;
   }
+
   
+//====================================================================================================
+//				FillModule
+//====================================================================================================
+  void SCTErrMonTool::FillModule( moduleGeo_t module, TH2F * histo )
+  {
+		unsigned int lowX  = 0;
+		unsigned int highX = 0;
+		unsigned int lowY  = 0;
+		unsigned int highY = 0;
+		double area = 0.;
+
+		double widthEta = 2. * c_rangeEta / c_nBinsEta;
+		double widthPhi = 2. * M_PI / c_nBinsPhi;
+		double edgesEta[200], centerEta[200],
+				 edgesPhi[200], centerPhi[200];
+
+		histo->GetXaxis()->GetLowEdge(edgesEta); 
+		histo->GetXaxis()->GetCenter(centerEta); 
+		histo->GetXaxis()->GetLowEdge(edgesPhi); 
+		histo->GetXaxis()->GetCenter(centerPhi); 
+
+		for ( unsigned int i = 0; i < c_nBinsEta; i++)
+			if( edgesEta[i] + widthEta > module.first.first )
+			{
+				lowX = i;
+				break;
+			}
+		for ( unsigned int i = lowX; i < c_nBinsEta; i++)
+			if( edgesEta[i] > module.first.second )
+			{
+				highX = i;
+				break;
+			}
+		for ( unsigned int i = 0; i < c_nBinsPhi; i++)
+			if( edgesPhi[i] + widthPhi > module.second.first )
+			{
+				lowY = i;
+				break;
+			}
+		for ( unsigned int i = lowY; i < c_nBinsPhi; i++)
+			if( edgesPhi[i] > module.second.second )
+			{
+				highY = i;
+				break;
+			}
+		for ( unsigned int i = lowX; i < highX; i++)
+			for ( unsigned int j = lowY; j < highY; j++)
+			{
+				area = (
+				(( ( module.first.second < edgesEta[i] + widthEta ) ? module.first.second : ( edgesEta[i] + widthEta ) ) - 
+				   ( module.first.first > edgesEta[i] ) ? module.first.first : edgesEta[i] ) * 
+				(( ( module.second.second < edgesPhi[j] + widthPhi ) ? module.second.second : ( edgesPhi[j] + widthPhi ) ) - 
+				   ( module.second.first > edgesPhi[j] ) ? module.second.first : edgesPhi[j] )
+				) / ( widthEta * widthPhi );
+				histo -> Fill( centerEta[i], centerPhi[j], area );
+			}
+			return;
+  }

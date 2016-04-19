@@ -1055,14 +1055,14 @@ CMTUSERCONTEXT_scripts (from PROJECT) excludes [CMTUSERCONTEXT_no_scripts]
 CMTUSERCONTEXT_no_prototypes (from PROJECT) excludes [CMTUSERCONTEXT_prototypes]
 CMTUSERCONTEXT_with_installarea (from PROJECT) excludes [CMTUSERCONTEXT_without_installarea]
 CMTUSERCONTEXT_without_version_directory (from PROJECT) excludes [CMTUSERCONTEXT_with_version_directory]
-OfflineDQ_no_config (from PROJECT) excludes [OfflineDQ_config]
-OfflineDQ_no_root (from PROJECT) excludes [OfflineDQ_root]
-OfflineDQ_cleanup (from PROJECT) excludes [OfflineDQ_no_cleanup]
-OfflineDQ_scripts (from PROJECT) excludes [OfflineDQ_no_scripts]
-OfflineDQ_no_prototypes (from PROJECT) excludes [OfflineDQ_prototypes]
-OfflineDQ_with_installarea (from PROJECT) excludes [OfflineDQ_without_installarea]
-OfflineDQ_without_version_directory (from PROJECT) excludes [OfflineDQ_with_version_directory]
-OfflineDQ (from PROJECT)
+private_no_config (from PROJECT) excludes [private_config]
+private_no_root (from PROJECT) excludes [private_root]
+private_cleanup (from PROJECT) excludes [private_no_cleanup]
+private_scripts (from PROJECT) excludes [private_no_scripts]
+private_no_prototypes (from PROJECT) excludes [private_prototypes]
+private_with_installarea (from PROJECT) excludes [private_without_installarea]
+private_without_version_directory (from PROJECT) excludes [private_with_version_directory]
+private (from PROJECT)
 AtlasProduction_no_config (from PROJECT) excludes [AtlasProduction_config]
 AtlasProduction_no_root (from PROJECT) excludes [AtlasProduction_root]
 AtlasProduction_cleanup (from PROJECT) excludes [AtlasProduction_no_cleanup]
@@ -1244,7 +1244,7 @@ TrigDecisionTool_Trigger/TrigEvent/TrigMuonEvent_nothasPP (from package TrigDeci
 no_pack_dist_check (from package SCT_Monitoring) applied [SCT_Monitoring]
 ----------> CMTPATH
 # Add path /cvmfs/atlas.cern.ch/repo/tools/slc6/cmt from CMTUSERCONTEXT
-# Add path /afs/cern.ch/user/d/dhayakaw/private/OfflineDQ/SCTMonitoring from initialization
+# Add path /afs/cern.ch/user/k/kkoda/private/SCTMonitoring from initialization
 # Add path /cvmfs/atlas.cern.ch/repo/sw/software/x86_64-slc6-gcc49-opt/20.7.5/AtlasProduction/20.7.5.4 from initialization
 # Add path /cvmfs/atlas.cern.ch/repo/sw/software/x86_64-slc6-gcc49-opt/20.7.5/AtlasOffline/20.7.5 from ProjectPath
 # Add path /cvmfs/atlas.cern.ch/repo/sw/software/x86_64-slc6-gcc49-opt/20.7.5/AtlasAnalysis/20.7.5 from ProjectPath

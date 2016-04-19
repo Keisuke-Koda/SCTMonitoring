@@ -3,7 +3,7 @@
 #====================================
 #  Document check_install_joboptions
 #
-#   Generated Tue Apr 12 11:41:43 2016  by kkoda
+#   Generated Tue Apr 12 12:00:48 2016  by kkoda
 #
 #====================================
 
@@ -107,7 +107,7 @@ check_install_joboptions :: $(check_install_joboptionsactionstamp)
 
 #$(check_install_joboptionsactionstamp) :: $(check_install_joboptions_dependencies)
 $(check_install_joboptionsactionstamp) ::
-	$(silent) /cvmfs/atlas.cern.ch/repo/sw/software/x86_64-slc6-gcc49-opt/20.7.5/AtlasCore/20.7.5/External/ExternalPolicy/cmt/atlas_check_installations.sh -files=' -s=../share *.txt *.py ' -installdir=/afs/cern.ch/user/d/dhayakaw/private/OfflineDQ/SCTMonitoring/InstallArea/jobOptions/SCT_Monitoring -level=
+	$(silent) /cvmfs/atlas.cern.ch/repo/sw/software/x86_64-slc6-gcc49-opt/20.7.5/AtlasCore/20.7.5/External/ExternalPolicy/cmt/atlas_check_installations.sh -files=' -s=../share *.txt *.py ' -installdir=/afs/cern.ch/user/k/kkoda/private/SCTMonitoring/InstallArea/jobOptions/SCT_Monitoring -level=
 	$(silent) cat /dev/null > $(check_install_joboptionsactionstamp)
 #	@echo ok > $(check_install_joboptionsactionstamp)
 
@@ -118,7 +118,7 @@ else
 
 #check_install_joboptions :: $(check_install_joboptions_dependencies)
 check_install_joboptions ::
-	$(silent) /cvmfs/atlas.cern.ch/repo/sw/software/x86_64-slc6-gcc49-opt/20.7.5/AtlasCore/20.7.5/External/ExternalPolicy/cmt/atlas_check_installations.sh -files=' -s=../share *.txt *.py ' -installdir=/afs/cern.ch/user/d/dhayakaw/private/OfflineDQ/SCTMonitoring/InstallArea/jobOptions/SCT_Monitoring -level=
+	$(silent) /cvmfs/atlas.cern.ch/repo/sw/software/x86_64-slc6-gcc49-opt/20.7.5/AtlasCore/20.7.5/External/ExternalPolicy/cmt/atlas_check_installations.sh -files=' -s=../share *.txt *.py ' -installdir=/afs/cern.ch/user/k/kkoda/private/SCTMonitoring/InstallArea/jobOptions/SCT_Monitoring -level=
 
 endif
 
