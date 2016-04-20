@@ -17,6 +17,7 @@
 //conditions stuff
 #include "InDetConditionsSummaryService/InDetHierarchy.h"
 #include "SCT_ConditionsServices/ISCT_ByteStreamErrorsSvc.h"
+//#include "SCT_ConditionsServices/ISCT_ConfigurationConditionsSvc.h"
 #include "TH1F.h"
 #include "TH2I.h"
 #include "TProfile2D.h"
@@ -27,6 +28,7 @@
 #include "Identifier/Identifier.h"
 #include "InDetIdentifier/SCT_ID.h"
 #include "InDetReadoutGeometry/SCT_DetectorManager.h"
+#include "InDetReadoutGeometry/SiDetectorElement.h"
 #include "EventInfo/EventID.h"
 #include "EventInfo/EventInfo.h"
 #include "cArrayUtilities.h"
@@ -172,7 +174,7 @@ SCTErrMonTool::SCTErrMonTool(const std::string & type,const std::string & name,c
   	m_rodClockErrsMax{},
   	m_truncRodErrsMax{},
   	m_bsParseErrsMax{},
-  m_misslinkErrsMax{},
+   m_misslinkErrsMax{},
   	m_totErrsMax{},
   	m_totModErrsMax{},
     m_nLink0{},
@@ -283,9 +285,16 @@ SCTErrMonTool::SCTErrMonTool(const std::string & type,const std::string & name,c
     //m_errThreshold{}, property
     //m_effThreshold{}, property
     //m_noiseThreshold{}, property
-		c_nBinsEta( 200 ),
-		c_rangeEta( 2.5 ),
-		c_nBinsPhi( 200 )
+	 m_sctManager( 0 ),
+	 m_errorGeoSCT(),
+	 m_disabledGeoSCT(),
+	 m_disabledModulesMapSCT(nullptr),
+	 m_badModulesMapSCT(nullptr),
+	 m_errorModulesMapSCT(nullptr),
+	 m_totalModulesMapSCT(nullptr),
+	 c_nBinsEta( 200 ),
+	 c_rangeEta( 2.5 ),
+	 c_nBinsPhi( 200 );
 {
 /** sroe 3 Sept 2015:
   histoPathBase is declared as a property in the base class, assigned to m_path
@@ -319,6 +328,13 @@ SCTErrMonTool::SCTErrMonTool(const std::string & type,const std::string & name,c
   declareProperty("IgnoreRDOCutOnline",m_ignore_RDO_cut_online);
 }
 
+StatusCode SCTErrMonTool::initialize() {
+	if (detStore()->retrieve(m_sctManager, "SCT").isFailure()){
+		msg(MSG::ERROR) << "Could not retrieve SCT Detector Manager" << endreq;
+		return StatusCode::FAILURE;
+	}
+	return ManagedMonitorToolBase::initialize();
+}
 //====================================================================================================
 //====================================================================================================
 SCTErrMonTool::~SCTErrMonTool(){
@@ -373,6 +389,35 @@ StatusCode SCTErrMonTool::bookHistograms()
   return StatusCode::SUCCESS;
 }
 
+//====================================================================================================
+//                          SCTErrMonTool :: bookHistogramsRecurrent, Keisuke Koda 20/04/2016
+//====================================================================================================
+StatusCode SCTErrMonTool::bookHistogramsRecurrent()
+{
+	MonGroup monGr_shift( this, "SCT/Track/DeadModules", run, ATTRIB_UNMANAGED );
+
+	bool status = true;
+	if ( newRun )
+	{
+		m_disabledModulesMapSCT   = new TH2F( "disabledModulesMapSCT", "Map of disabled modules for SCT", 
+				c_nBinsEta, -c_rangeEta, c_rangeEta, 
+				c_nBinsPhi, -M_PI, M_PI );
+
+		m_errorModulesMapSCT   = new TH2F( "errorModulesMapSCT", "Map of bad modules for SCT", 
+				c_nBinsEta, -c_rangeEta, c_rangeEta, 
+				c_nBinsPhi, -M_PI, M_PI );
+
+		m_totalModulesMapSCT   = new TH2F( "totalModulesMapSCT", "Map of all bad and disabled modules for SCT", 
+				c_nBinsEta, -c_rangeEta, c_rangeEta, 
+				c_nBinsPhi, -M_PI, M_PI );
+
+		status &= monGr_shift.regHist( m_disabledModulesMapSCT ).isSuccess();
+		status &= monGr_shift.regHist( m_errorModulesMapSCT ).isSuccess();
+		status &= monGr_shift.regHist( m_totalModulesMapSCT ).isSuccess();
+	}
+
+	return ( status ) ? StatusCode::SUCCESS : StatusCode::FAILURE;
+}
 //====================================================================================================
 //                            SCTErrMonTool :: fillHistograms
 /// This is the real workhorse, called for each event. It retrieves the data each time 
@@ -607,6 +652,37 @@ bool endOfEventsBlock(endOfLumiBlock);
       msg(MSG::WARNING) << "Error in checkRateHists()" << endreq ;
     ATH_MSG_DEBUG( "Exiting finalHists" );
   }
+  if ( ( endOfLumiBlock || endOfRun ) && m_manager->lumiBlockNumber() % 1 == 0 )
+  {
+	   m_disabledModulesMapSCT->Reset("ICE");
+		m_errorModulesMapSCT->Reset("ICE");
+		m_totalModulesMapSCT->Reset("ICE");
+
+		SyncErrorSCT();
+		SyncDisableSCT();
+
+		{
+			geoContainerPure_t::iterator currIt = m_disabledGeoSCT.begin();
+			geoContainerPure_t::iterator currEnd = m_disabledGeoSCT.end();
+			while (currIt != currEnd) {
+				FillModule( (*currIt).second, m_disabledModulesMapSCT );
+				++currIt;
+			}
+		}
+
+		{
+			geoContainer_t::iterator currIt = m_errordGeoSCT.begin();
+			geoContainer_t::iterator currEnd = m_errordGeoSCT.end();
+			while (currIt != currEnd) {
+				FillModule( (*currIt).second, m_errordModulesMapSCT );
+				++currIt;
+			}
+		}
+
+		m_totalModulesMapSCT->Add( m_disabledModulesMapSCT );
+		m_totalModulesMapSCT->Add( m_errorModulesMapSCT );
+  }
+
   return StatusCode::SUCCESS;
 }
 
@@ -2184,7 +2260,7 @@ SCTErrMonTool::prof2Factory(const std::string & name, const std::string & title,
 
   
 //====================================================================================================
-//				FillModule
+//                          SCTErrMonTool :: FillModule, Keisuke Kouda 20/04/2016
 //====================================================================================================
   void SCTErrMonTool::FillModule( moduleGeo_t module, TH2F * histo )
   {
@@ -2240,4 +2316,77 @@ SCTErrMonTool::prof2Factory(const std::string & name, const std::string & title,
 				histo -> Fill( centerEta[i], centerPhi[j], area );
 			}
 			return;
-  }
+
+//====================================================================================================
+//                          SCTErrMonTool :: SyncSCT, Keisuke Kouda 20/04/2016
+//====================================================================================================
+bool SCTErrMonTool::SyncErrorSCT()
+{
+	double rz = 0;
+	double deltaZ = 0;
+
+	m_errorGeoSCT.clear();
+
+	for ( unsigned int i = 0; i < SCT_ByteStreamErrors::NUM_ERROR_TYPES; i++ )
+	{
+		std::set<IdentifierHash> * sctErrors = m_byteStreamErrSvc->getErrorSet( i );
+		std::set<IdentifierHash>::iterator fit = sctErrors->begin();
+		std::set<IdentifierHash>::iterator fitEnd = sctErrors->end();
+
+		// Check that all modules are registered
+		for (; fit != fitEnd; ++fit) {
+			// The module is already registered, no need to do something
+			if ( m_errorGeoSCT.count( (*fit) ) )
+				continue;
+			else
+			{
+				moduleGeo_t moduleGeo;
+
+				InDetDD::SiDetectorElement * newElement = m_sctManager->getDetectorElement( (*fit) );
+				newElement->getEtaPhiRegion( deltaZ,
+						moduleGeo.first.first,  moduleGeo.first.second,
+						moduleGeo.second.first, moduleGeo.second.second,
+						rz );
+
+				m_errorGeoSCT.insert( std::pair<IdentifierHash, moduleGeo_t>( (*fit), moduleGeo ) );
+			}
+		}
+	}
+
+	return true;
+}
+
+bool SCTErrMonTool::SyncDisabledSCT()
+{
+	bool altered = false;
+	double rz = 0;
+	double deltaZ = 0;
+
+	m_disabledGeoSCT.clear();
+	std::set<Identifier>* badModules = m_ConfigurationSvc->badModules();
+	std::set<Identifier>::iterator fit = badModules->begin();
+	std::set<Identifier>::iterator fitEnd = badModules->end();
+
+	// Check that all modules are registered
+	for (; fit != fitEnd; ++fit)
+	{
+		// The module is already registered, no need to do something
+		if ( m_disabledGeoSCT.count( (*fit) ) )
+			continue;
+		else
+		{
+			altered = true;
+			moduleGeo_t moduleGeo;
+
+			InDetDD::SiDetectorElement * newElement = m_sctManager->getDetectorElement( (*fit) );
+			newElement->getEtaPhiRegion( deltaZ,
+					moduleGeo.first.first,  moduleGeo.first.second,
+					moduleGeo.second.first, moduleGeo.second.second,
+					rz );
+
+			m_disabledGeoSCT.insert( std::pair<Identifier, moduleGeo_t>( (*fit), moduleGeo ) );
+		}
+	}
+
+	return altered;
+}

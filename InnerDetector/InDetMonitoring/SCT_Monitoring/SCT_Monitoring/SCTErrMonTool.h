@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <utility>
 
 //for CondDB
 #include "InDetConditionsSummaryService/IInDetConditionsSvc.h" 
@@ -36,28 +37,40 @@ class StatusCode;
 class SCT_ID;
 class SCT_ModuleStatistics;
 class ISCT_ByteStreamErrorsSvc;
+class ISCT_ConfigurationConditionsSvc;
 class TString;
+
+namespace InDetDD
+{
+	class SCT_DetectorManager;
+}
 
 ///Concrete monitoring tool derived from MonitorToolBase
 class SCTErrMonTool : public ManagedMonitorToolBase
 {
-		// First pair is eta and second pair is phi.
-		// First element of pair is minimum second is maximum.
+		//Define pair for FillModule
+		//First pair is eta and second pair is phi.
+		//First element of pair is minimum second is maximum.
 		typedef std::pair< std::pair<double, double>, std::pair<double, double> > moduleGeo_t; 
 		typedef std::map< IdentifierHash, moduleGeo_t > geoContainer_t;
 		typedef std::map< Identifier, moduleGeo_t > geoContainerPure_t;
+
   public:
 	  SCTErrMonTool(const std::string & type,const std::string & name,const IInterface* parent);
 	  virtual ~SCTErrMonTool();
 	  //
 	  /**    @name Methods reimplemented from baseclass */
 	  //@{
+	  //initialize
+	  virtual StatusCode initialize() final;
 	  //book
 	  virtual StatusCode bookHistograms() final;
 	  //fill
 	  virtual StatusCode fillHistograms() final;
 	  //post processing
 	  virtual StatusCode procHistograms() final;
+	  //Recurrent
+	  virtual StatusCode bookHistogramsRecurrent() final;
 	  //@}
 
   private:
@@ -311,10 +324,23 @@ class SCTErrMonTool : public ManagedMonitorToolBase
   Prof2_t
     prof2Factory(const std::string & name, const std::string & title, const unsigned int&, VecProf2_t & storageVector);
 
-		void FillModule( moduleGeo_t module, TH2F * histo );
-		const unsigned int c_nBinsEta;
-		const float 			 c_rangeEta;
-		const unsigned int c_nBinsPhi;
+  bool SyncDisabledSCT();
+  bool SyncErrorSCT();
+
+  void FillModule( moduleGeo_t module, TH2F * histo );
+
+  const InDetDD::SCT_DetectorManager * m_sctManager;
+
+  geoContainer_t m_errorGeoSCT;
+  geoContainerPure_t m_disabledGeoSCT;
+
+  TH2F * m_disabledModulesMapSCT;
+  TH2F * m_errorModulesMapSCT;
+  TH2F * m_totalModulesMapSCT;
+
+  const unsigned int c_nBinsEta;
+  const float 		 c_rangeEta;
+  const unsigned int c_nBinsPhi;
 };
 
 #endif
