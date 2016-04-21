@@ -289,12 +289,11 @@ SCTErrMonTool::SCTErrMonTool(const std::string & type,const std::string & name,c
 	 m_errorGeoSCT(),
 	 m_disabledGeoSCT(),
 	 m_disabledModulesMapSCT(nullptr),
-	 m_badModulesMapSCT(nullptr),
 	 m_errorModulesMapSCT(nullptr),
 	 m_totalModulesMapSCT(nullptr),
 	 c_nBinsEta( 200 ),
 	 c_rangeEta( 2.5 ),
-	 c_nBinsPhi( 200 );
+	 c_nBinsPhi( 200 )
 {
 /** sroe 3 Sept 2015:
   histoPathBase is declared as a property in the base class, assigned to m_path
@@ -659,7 +658,7 @@ bool endOfEventsBlock(endOfLumiBlock);
 		m_totalModulesMapSCT->Reset("ICE");
 
 		SyncErrorSCT();
-		SyncDisableSCT();
+		SyncDisabledSCT();
 
 		{
 			geoContainerPure_t::iterator currIt = m_disabledGeoSCT.begin();
@@ -671,10 +670,10 @@ bool endOfEventsBlock(endOfLumiBlock);
 		}
 
 		{
-			geoContainer_t::iterator currIt = m_errordGeoSCT.begin();
-			geoContainer_t::iterator currEnd = m_errordGeoSCT.end();
+			geoContainer_t::iterator currIt = m_errorGeoSCT.begin();
+			geoContainer_t::iterator currEnd = m_errorGeoSCT.end();
 			while (currIt != currEnd) {
-				FillModule( (*currIt).second, m_errordModulesMapSCT );
+				FillModule( (*currIt).second, m_errorModulesMapSCT );
 				++currIt;
 			}
 		}
@@ -2316,6 +2315,7 @@ SCTErrMonTool::prof2Factory(const std::string & name, const std::string & title,
 				histo -> Fill( centerEta[i], centerPhi[j], area );
 			}
 			return;
+}
 
 //====================================================================================================
 //                          SCTErrMonTool :: SyncSCT, Keisuke Kouda 20/04/2016
