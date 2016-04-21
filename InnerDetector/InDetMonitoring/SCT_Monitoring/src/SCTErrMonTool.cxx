@@ -2303,17 +2303,30 @@ SCTErrMonTool::prof2Factory(const std::string & name, const std::string & title,
 				highY = i;
 				break;
 			}
+		for ( unsigned int i = lowX; i < highX; i++ )
+			for ( unsigned int j = lowY; j < highY; j++ )
+			{
+				area = (
+						((( module.first.second < edgesEta[i] + widthEta ) ? module.first.second : (edgesEta[i] + widthEta) )  - 
+						 ( ( module.first.first > edgesEta[i] ) ? module.first.first : edgesEta[i] ) ) *
+						((( module.second.second < edgesPhi[j] + widthPhi ) ? module.second.second : (edgesPhi[j] + widthPhi) )  - 
+						 ( ( module.second.first > edgesPhi[j] ) ? module.second.first : edgesPhi[j] ) ) 
+						) /  ( widthEta * widthPhi ); 
+				histo->Fill( centerEta[i], centerPhi[j], area );
+			}
+			/*
 		for ( unsigned int i = lowX; i < highX; i++)
 			for ( unsigned int j = lowY; j < highY; j++)
 			{
 				area = (
-				(( ( module.first.second < edgesEta[i] + widthEta ) ? module.first.second : ( edgesEta[i] + widthEta ) ) - 
-				   ( module.first.first > edgesEta[i] ) ? module.first.first : edgesEta[i] ) * 
-				(( ( module.second.second < edgesPhi[j] + widthPhi ) ? module.second.second : ( edgesPhi[j] + widthPhi ) ) - 
-				   ( module.second.first > edgesPhi[j] ) ? module.second.first : edgesPhi[j] )
-				) / ( widthEta * widthPhi );
+						(( ( module.first.second < edgesEta[i] + widthEta ) ? module.first.second : ( edgesEta[i] + widthEta ) ) - 
+						 ( ( module.first.first > edgesEta[i] ) ? module.first.first : edgesEta[i] ) ) * 
+						(( ( module.second.second < edgesPhi[j] + widthPhi ) ? module.second.second : ( edgesPhi[j] + widthPhi ) ) - 
+						 ( ( module.second.first > edgesPhi[j] ) ? module.second.first : edgesPhi[j] ) )
+						) / ( widthEta * widthPhi );
 				histo -> Fill( centerEta[i], centerPhi[j], area );
 			}
+			*/
 			return;
 }
 
