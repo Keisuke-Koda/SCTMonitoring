@@ -13,7 +13,6 @@ use InDetRawData                InDetRawData-*          InnerDetector/InDetRawEv
 use InDetIdentifier             InDetIdentifier-*       InnerDetector/InDetDetDescr
 use InDetRIO_OnTrack            InDetRIO_OnTrack-*      InnerDetector/InDetRecEvent
 
-use Identifier                  Identifier-*            DetectorDescription
 use TrkParameters               TrkParameters-*         Tracking/TrkEvent
 
 # The following for TRT time
@@ -53,6 +52,8 @@ use TrigDecisionTool            TrigDecisionTool-*      Trigger/TrigAnalysis
 use TrigAnalysisInterfaces      TrigAnalysisInterfaces-* Trigger/TrigAnalysis
 
 use MagFieldInterfaces  MagFieldInterfaces-*    MagneticField
+
+use Identifier                  Identifier-*            DetectorDescription
 
 #Tracking packages for Track histograms
 use TrkTrack                    TrkTrack-*              Tracking/TrkEvent
