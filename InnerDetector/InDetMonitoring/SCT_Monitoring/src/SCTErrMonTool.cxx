@@ -2276,8 +2276,8 @@ SCTErrMonTool::prof2Factory(const std::string & name, const std::string & title,
 
 		histo->GetXaxis()->GetLowEdge(edgesEta); 
 		histo->GetXaxis()->GetCenter(centerEta); 
-		histo->GetXaxis()->GetLowEdge(edgesPhi); 
-		histo->GetXaxis()->GetCenter(centerPhi); 
+		histo->GetYaxis()->GetLowEdge(edgesPhi); 
+		histo->GetYaxis()->GetCenter(centerPhi); 
 
 		for ( unsigned int i = 0; i < c_nBinsEta; i++)
 			if( edgesEta[i] + widthEta > module.first.first )
