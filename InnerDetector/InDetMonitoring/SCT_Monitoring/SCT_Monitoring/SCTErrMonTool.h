@@ -96,7 +96,7 @@ class SCTErrMonTool : public ManagedMonitorToolBase
   TH1F * m_secondHit_ECm;
   //@}
   
-  enum ErrorTypes {ABCD, RAW,TIMEOUT, LVL1ID,BCID, PREAMBLE, FORMATTER, MASKEDLINKS, RODCLOCK, TRUNCATEDROD, ROBFRAG, BSPARSE, MISSINGLINK, SUMMARY, N_ERRTYPES};
+  enum ErrorTypes {ABCD, RAW,TIMEOUT, LVL1ID,BCID, PREAMBLE, FORMATTER, MASKEDLINKS, RODCLOCK, TRUNCATEDROD, ROBFRAG, BSPARSE, MISSINGLINK, SUMMARY, N_ERRTYPES, DETECOTORCOVERAGE};
   
   ///rate of errors
   TProfile2D* m_allErrs[N_ERRTYPES][NREGIONS_INC_GENERAL][SCT_Monitoring::N_ENDCAPSx2];
@@ -327,7 +327,8 @@ class SCTErrMonTool : public ManagedMonitorToolBase
   bool SyncDisabledSCT();
   bool SyncErrorSCT();
 
-  void FillModule( moduleGeo_t module, TH2F * histo );
+  void fillModule( moduleGeo_t module, TH2F * histo );
+	double calculateDetectorCoverage( TH2F * histo );
 
   const InDetDD::SCT_DetectorManager * m_sctManager;
 
@@ -341,6 +342,17 @@ class SCTErrMonTool : public ManagedMonitorToolBase
   const unsigned int c_nBinsEta;
   const float 		 c_rangeEta;
   const unsigned int c_nBinsPhi;
+
+  TProfile * m_DisabledDetectorCoverageVsLB;
+  TProfile * m_ErrorDetectorCoverageVsLB;
+  TProfile * m_TotalDetectorCoverageVsLB;
+  TH1F * m_MaxDisabledDetectorCoverageVsLB;
+  TH1F * m_MaxErrorDetectorCoverageVsLB;
+  TH1F * m_MaxTotalDetectorCoverageVsLB;
+	double m_disabledDetectorCoverageMax;
+	double m_errorDetectorCoverageMax;
+	double m_totalDetectorCoverageMax;
+	
 };
 
 #endif

@@ -174,7 +174,7 @@ SCTErrMonTool::SCTErrMonTool(const std::string & type,const std::string & name,c
   	m_rodClockErrsMax{},
   	m_truncRodErrsMax{},
   	m_bsParseErrsMax{},
-   m_misslinkErrsMax{},
+		m_misslinkErrsMax{},
   	m_totErrsMax{},
   	m_totModErrsMax{},
     m_nLink0{},
@@ -286,14 +286,18 @@ SCTErrMonTool::SCTErrMonTool(const std::string & type,const std::string & name,c
     //m_effThreshold{}, property
     //m_noiseThreshold{}, property
 	 m_sctManager( 0 ),
-	 m_errorGeoSCT(),
 	 m_disabledGeoSCT(),
+	 m_errorGeoSCT(),
 	 m_disabledModulesMapSCT(nullptr),
 	 m_errorModulesMapSCT(nullptr),
 	 m_totalModulesMapSCT(nullptr),
 	 c_nBinsEta( 200 ),
 	 c_rangeEta( 2.5 ),
-	 c_nBinsPhi( 200 )
+	 c_nBinsPhi( 200 ),
+	 
+	 m_errorDetectorCoverageMax{},
+	 m_disabledDetectorCoverageMax{},
+	 m_totalDetectorCoverageMax{}
 {
 /** sroe 3 Sept 2015:
   histoPathBase is declared as a property in the base class, assigned to m_path
@@ -436,7 +440,35 @@ StatusCode SCTErrMonTool::fillHistograms(){
   const SCT_RDO_Container* p_rdocontainer;
   ATH_CHECK(evtStore()->retrieve(p_rdocontainer,m_dataObjectName));
   Identifier SCT_Identifier;
+//bad modules histo
+	m_disabledModulesMapSCT->Reset("ICE");
+	m_errorModulesMapSCT->Reset("ICE");
+	m_totalModulesMapSCT->Reset("ICE");
 
+	SyncErrorSCT();
+	SyncDisabledSCT();
+
+	{
+		geoContainerPure_t::iterator currIt = m_disabledGeoSCT.begin();
+		geoContainerPure_t::iterator currEnd = m_disabledGeoSCT.end();
+		while (currIt != currEnd) {
+			fillModule( (*currIt).second, m_disabledModulesMapSCT );
+			++currIt;
+		}
+	}
+
+	{
+		geoContainer_t::iterator currIt = m_errorGeoSCT.begin();
+		geoContainer_t::iterator currEnd = m_errorGeoSCT.end();
+		while (currIt != currEnd) {
+			fillModule( (*currIt).second, m_errorModulesMapSCT );
+			++currIt;
+		}
+	}
+
+	m_totalModulesMapSCT->Add( m_disabledModulesMapSCT );
+	m_totalModulesMapSCT->Add( m_errorModulesMapSCT );
+	
   //Define variables for error histograms
   int numFirstHit=0,     numSecondHit=0,      numSCTRDOs=0;
   int numFirstHit_ECp=0, numSecondHit_ECp=0,  numSCTRDOs_ECp=0;
@@ -650,36 +682,6 @@ bool endOfEventsBlock(endOfLumiBlock);
     if (checkRateHists().isFailure())
       msg(MSG::WARNING) << "Error in checkRateHists()" << endreq ;
     ATH_MSG_DEBUG( "Exiting finalHists" );
-  }
-  if ( ( endOfLumiBlock || endOfRun ) && m_manager->lumiBlockNumber() % 1 == 0 )
-  {
-	   m_disabledModulesMapSCT->Reset("ICE");
-		m_errorModulesMapSCT->Reset("ICE");
-		m_totalModulesMapSCT->Reset("ICE");
-
-		SyncErrorSCT();
-		SyncDisabledSCT();
-
-		{
-			geoContainerPure_t::iterator currIt = m_disabledGeoSCT.begin();
-			geoContainerPure_t::iterator currEnd = m_disabledGeoSCT.end();
-			while (currIt != currEnd) {
-				FillModule( (*currIt).second, m_disabledModulesMapSCT );
-				++currIt;
-			}
-		}
-
-		{
-			geoContainer_t::iterator currIt = m_errorGeoSCT.begin();
-			geoContainer_t::iterator currEnd = m_errorGeoSCT.end();
-			while (currIt != currEnd) {
-				FillModule( (*currIt).second, m_errorModulesMapSCT );
-				++currIt;
-			}
-		}
-
-		m_totalModulesMapSCT->Add( m_disabledModulesMapSCT );
-		m_totalModulesMapSCT->Add( m_errorModulesMapSCT );
   }
 
   return StatusCode::SUCCESS;
@@ -901,6 +903,34 @@ StatusCode SCTErrMonTool::fillByteStreamErrors() {
       // m_2d_MaxMissingLinkHeaderVsLB[reg]->SetBinContent((int)current_lb,m_misslinkErrsMax[reg]+1,1); 
     }
   }
+
+	double disabled_detector_coverage = 0;
+	double error_detector_coverage = 0;
+	double total_detector_coverage = 0;
+	m_disabledDetectorCoverageMax = 0;
+	m_errorDetectorCoverageMax = 0;
+	m_totalDetectorCoverageMax = 0;
+
+	disabled_detector_coverage = calculateDetectorCoverage(m_disabledModulesMapSCT);
+	error_detector_coverage = calculateDetectorCoverage(m_errorModulesMapSCT);
+	total_detector_coverage = calculateDetectorCoverage(m_totalModulesMapSCT);
+
+  m_DisabledDetectorCoverageVsLB->Fill((int)current_lb,disabled_detector_coverage);
+  m_ErrorDetectorCoverageVsLB->Fill((int)current_lb,error_detector_coverage);
+  m_TotalDetectorCoverageVsLB->Fill((int)current_lb,total_detector_coverage);
+
+	if(m_disabledDetectorCoverageMax<disabled_detector_coverage){
+		m_disabledDetectorCoverageMax=disabled_detector_coverage;
+		m_MaxDisabledDetectorCoverageVsLB->SetBinContent((int)current_lb,m_disabledDetectorCoverageMax);
+	}
+	if(m_errorDetectorCoverageMax<error_detector_coverage){
+		m_errorDetectorCoverageMax=error_detector_coverage;
+		m_MaxErrorDetectorCoverageVsLB->SetBinContent((int)current_lb,m_errorDetectorCoverageMax);
+	}
+	if(m_totalDetectorCoverageMax<total_detector_coverage){
+		m_totalDetectorCoverageMax=total_detector_coverage;
+		m_MaxTotalDetectorCoverageVsLB->SetBinContent((int)current_lb,m_totalDetectorCoverageMax);
+	}
 
   m_MaskedLinks->Reset();
   int total_errors = 0; float cxb = 0; float cyb = 0; 
@@ -1485,8 +1515,6 @@ StatusCode  SCTErrMonTool::bookConfMaps(){
           m_BSParseVsLB[reg]->GetXaxis()->SetTitle("LumiBlock");
           m_BSParseVsLB[reg]->GetYaxis()->SetTitle("Num of BS parse errors");
           m_MissingLinkHeaderVsLB[reg] = new TProfile(misslinktitle[reg],"Ave. Missing Link Header errors per event in "+ region[reg],n_lumiBins,0.5,n_lumiBins+0.5);
-          m_BSParseVsLB[reg]->GetXaxis()->SetTitle("LumiBlock");
-          m_BSParseVsLB[reg]->GetYaxis()->SetTitle("Num of Missing Link Header errors");
 
           m_MaxMaskedLinksVsLB[reg] = new TH1F(maximummaskedlinktitle[reg],"Max num of masked link errors per event in "+ region[reg],n_lumiBins,0.5,n_lumiBins+0.5);
           m_MaxMaskedLinksVsLB[reg]->GetXaxis()->SetTitle("LumiBlock"); 
@@ -1553,8 +1581,28 @@ StatusCode  SCTErrMonTool::bookConfMaps(){
           m_MaxModulesWithErrorsVsLB[reg] = new TH1F(maxmoderrors[reg],"Max num of links with errors per event in "+region[reg],n_lumiBins,0.5,n_lumiBins+0.5);
           m_MaxModulesWithErrorsVsLB[reg]->GetXaxis()->SetTitle("LumiBlock"); 
           // m_2d_MaxModulesWithErrorsVsLB[reg] = new TH2I(maxmoderrors[reg]+"_2d","Max num of links with errors per event in "+region[reg],n_lumiBins,0.5,n_lumiBins+0.5,8176,0,8176);
- 
         }
+ 
+          m_DisabledDetectorCoverageVsLB = new TProfile("SCTDisabledDetectorCoverageVsLbs","Ave. loss of disabled detector coverage per event in ",n_lumiBins,0.5,n_lumiBins+0.5);
+          m_DisabledDetectorCoverageVsLB->GetXaxis()->SetTitle("LumiBlock");
+          m_DisabledDetectorCoverageVsLB->GetYaxis()->SetTitle("Loss of Disabled Detector Coverage");
+          m_ErrorDetectorCoverageVsLB = new TProfile("SCTErrorDetectorCoverageVsLbs","Ave. loss of error detector coverage per event in ",n_lumiBins,0.5,n_lumiBins+0.5);
+          m_ErrorDetectorCoverageVsLB->GetXaxis()->SetTitle("LumiBlock");
+          m_ErrorDetectorCoverageVsLB->GetYaxis()->SetTitle("Loss of Error Detector Coverage");
+          m_TotalDetectorCoverageVsLB = new TProfile("SCTTotalDetectorCoverageVsLbs","Ave. loss of total detector coverage per event in ",n_lumiBins,0.5,n_lumiBins+0.5);
+          m_TotalDetectorCoverageVsLB->GetXaxis()->SetTitle("LumiBlock");
+          m_TotalDetectorCoverageVsLB->GetYaxis()->SetTitle("Loss of Total Detector Coverage");
+					
+          m_MaxDisabledDetectorCoverageVsLB = new TH1F("SCTDisabledDetectorCoveragemaxVsLbs","Max loss of disabled detector coverage per event in ",n_lumiBins,0.5,n_lumiBins+0.5);
+          m_MaxDisabledDetectorCoverageVsLB->GetXaxis()->SetTitle("LumiBlock");
+          m_MaxDisabledDetectorCoverageVsLB->GetYaxis()->SetTitle("Max Loss of Disabled Dtector Coverage");
+          m_MaxErrorDetectorCoverageVsLB = new TH1F("SCTErrorDetectorCoveragemaxVsLbs","Max loss of error detector coverage per event in ",n_lumiBins,0.5,n_lumiBins+0.5);
+          m_MaxErrorDetectorCoverageVsLB->GetXaxis()->SetTitle("LumiBlock");
+          m_MaxErrorDetectorCoverageVsLB->GetYaxis()->SetTitle("Max Loss of Error Dtector Coverage");
+          m_MaxTotalDetectorCoverageVsLB = new TH1F("SCTTotalDetectorCoveragemaxVsLbs","Max loss of total detector coverage per event in ",n_lumiBins,0.5,n_lumiBins+0.5);
+          m_MaxTotalDetectorCoverageVsLB->GetXaxis()->SetTitle("LumiBlock");
+          m_MaxTotalDetectorCoverageVsLB->GetYaxis()->SetTitle("Max Loss of Total Dtector Coverage");
+
 	for(int lyr=0; lyr<4; lyr++){
 	  m_LinksWithErrorsVsLBBarrel[lyr] = new TProfile("SCTLinksWithErrorsBarrel"+lyrerrors[lyr],"Ave. num of links with errors per event in Barrel "+layer[lyr],n_lumiBins,0.5,n_lumiBins+0.5);
 	  m_LinksWithErrorsVsLBBarrel[lyr]->GetXaxis()->SetTitle("LumiBlock"); 
@@ -1700,6 +1748,14 @@ StatusCode  SCTErrMonTool::bookConfMaps(){
       if ( ConfMaps.regHist(m_MaxMissingLinkHeaderVsLB[0]).isFailure() ) msg(MSG::WARNING) << "Cannot book Histogram:SCTMissingLinkHeaderConf" << endreq;
       if ( ConfHistECA.regHist(m_MaxMissingLinkHeaderVsLB[1]).isFailure() ) msg(MSG::WARNING) << "Cannot book Histogram:SCTMissingLinkHeaderConf" << endreq;
       if ( ConfHistECC.regHist(m_MaxMissingLinkHeaderVsLB[2]).isFailure() ) msg(MSG::WARNING) << "Cannot book Histogram:SCTMissingLinkHEaderConf" << endreq;
+
+      if ( ConfHist.regHist(m_DisabledDetectorCoverageVsLB).isFailure() ) msg(MSG::WARNING) << "Cannot book Histogram:SCTSCTDisabledDetectorCoverageConf" << endreq;
+      if ( ConfHist.regHist(m_ErrorDetectorCoverageVsLB).isFailure() ) msg(MSG::WARNING) << "Cannot book Histogram:SCTSCTErrorDetectorCoverageConf" << endreq;
+      if ( ConfHist.regHist(m_TotalDetectorCoverageVsLB).isFailure() ) msg(MSG::WARNING) << "Cannot book Histogram:SCTSCTTotalDetectorCoverageConf" << endreq;
+
+      if ( ConfHist.regHist(m_MaxDisabledDetectorCoverageVsLB).isFailure() ) msg(MSG::WARNING) << "Cannot book Histogram:SCTDisabledDetectorCoverageConf" << endreq;
+      if ( ConfHist.regHist(m_MaxErrorDetectorCoverageVsLB).isFailure() ) msg(MSG::WARNING) << "Cannot book Histogram:SCTErrorDetectorCoverageConf" << endreq;
+      if ( ConfHist.regHist(m_MaxTotalDetectorCoverageVsLB).isFailure() ) msg(MSG::WARNING) << "Cannot book Histogram:SCTTotalDetectorCoverageConf" << endreq;
 
       for(int reg=0;reg<4;reg++){
 	// if ( ConfHist2D.regHist(m_2d_MaxMaskedLinksVsLB[reg]).isFailure() ) msg(MSG::WARNING) << "Cannot book Histogram:SCTMaskedLinkConf" << endreq;
@@ -2257,77 +2313,63 @@ SCTErrMonTool::prof2Factory(const std::string & name, const std::string & title,
     return moduleinEndcapA;
   }
 
-  
 //====================================================================================================
-//                          SCTErrMonTool :: FillModule, Keisuke Kouda 20/04/2016
+//                          SCTErrMonTool :: fillModule, Keisuke Kouda 20/04/2016
 //====================================================================================================
-  void SCTErrMonTool::FillModule( moduleGeo_t module, TH2F * histo )
-  {
-		unsigned int lowX  = 0;
-		unsigned int highX = 0;
-		unsigned int lowY  = 0;
-		unsigned int highY = 0;
-		double area = 0.;
+void SCTErrMonTool::fillModule( moduleGeo_t module, TH2F * histo )
+{
+	unsigned int lowX  = 0;
+	unsigned int highX = 0;
+	unsigned int lowY  = 0;
+	unsigned int highY = 0;
+	double area = 0.;
 
-		double widthEta = 2. * c_rangeEta / c_nBinsEta;
-		double widthPhi = 2. * M_PI / c_nBinsPhi;
-		double edgesEta[200], centerEta[200],
+	double widthEta = 2. * c_rangeEta / c_nBinsEta;
+	double widthPhi = 2. * M_PI / c_nBinsPhi;
+	double edgesEta[200], centerEta[200],
 				 edgesPhi[200], centerPhi[200];
 
-		histo->GetXaxis()->GetLowEdge(edgesEta); 
-		histo->GetXaxis()->GetCenter(centerEta); 
-		histo->GetYaxis()->GetLowEdge(edgesPhi); 
-		histo->GetYaxis()->GetCenter(centerPhi); 
+	histo->GetXaxis()->GetLowEdge(edgesEta); 
+	histo->GetXaxis()->GetCenter(centerEta); 
+	histo->GetYaxis()->GetLowEdge(edgesPhi); 
+	histo->GetYaxis()->GetCenter(centerPhi); 
 
-		for ( unsigned int i = 0; i < c_nBinsEta; i++)
-			if( edgesEta[i] + widthEta > module.first.first )
-			{
-				lowX = i;
-				break;
-			}
-		for ( unsigned int i = lowX; i < c_nBinsEta; i++)
-			if( edgesEta[i] > module.first.second )
-			{
-				highX = i;
-				break;
-			}
-		for ( unsigned int i = 0; i < c_nBinsPhi; i++)
-			if( edgesPhi[i] + widthPhi > module.second.first )
-			{
-				lowY = i;
-				break;
-			}
-		for ( unsigned int i = lowY; i < c_nBinsPhi; i++)
-			if( edgesPhi[i] > module.second.second )
-			{
-				highY = i;
-				break;
-			}
-		for ( unsigned int i = lowX; i < highX; i++ )
-			for ( unsigned int j = lowY; j < highY; j++ )
-			{
-				area = (
-						((( module.first.second < edgesEta[i] + widthEta ) ? module.first.second : (edgesEta[i] + widthEta) )  - 
-						 ( ( module.first.first > edgesEta[i] ) ? module.first.first : edgesEta[i] ) ) *
-						((( module.second.second < edgesPhi[j] + widthPhi ) ? module.second.second : (edgesPhi[j] + widthPhi) )  - 
-						 ( ( module.second.first > edgesPhi[j] ) ? module.second.first : edgesPhi[j] ) ) 
-						) /  ( widthEta * widthPhi ); 
-				histo->Fill( centerEta[i], centerPhi[j], area );
-			}
-			/*
-		for ( unsigned int i = lowX; i < highX; i++)
-			for ( unsigned int j = lowY; j < highY; j++)
-			{
-				area = (
-						(( ( module.first.second < edgesEta[i] + widthEta ) ? module.first.second : ( edgesEta[i] + widthEta ) ) - 
-						 ( ( module.first.first > edgesEta[i] ) ? module.first.first : edgesEta[i] ) ) * 
-						(( ( module.second.second < edgesPhi[j] + widthPhi ) ? module.second.second : ( edgesPhi[j] + widthPhi ) ) - 
-						 ( ( module.second.first > edgesPhi[j] ) ? module.second.first : edgesPhi[j] ) )
-						) / ( widthEta * widthPhi );
-				histo -> Fill( centerEta[i], centerPhi[j], area );
-			}
-			*/
-			return;
+	for ( unsigned int i = 0; i < c_nBinsEta; i++)
+		if( edgesEta[i] + widthEta > module.first.first )
+		{
+			lowX = i;
+			break;
+		}
+	for ( unsigned int i = lowX; i < c_nBinsEta; i++)
+		if( edgesEta[i] > module.first.second )
+		{
+			highX = i;
+			break;
+		}
+	for ( unsigned int i = 0; i < c_nBinsPhi; i++)
+		if( edgesPhi[i] + widthPhi > module.second.first )
+		{
+			lowY = i;
+			break;
+		}
+	for ( unsigned int i = lowY; i < c_nBinsPhi; i++)
+		if( edgesPhi[i] > module.second.second )
+		{
+			highY = i;
+			break;
+		}
+	for ( unsigned int i = lowX; i < highX; i++ )
+		for ( unsigned int j = lowY; j < highY; j++ )
+		{
+			area = (
+					((( module.first.second < edgesEta[i] + widthEta ) ? module.first.second : (edgesEta[i] + widthEta) )  - 
+					 ( ( module.first.first > edgesEta[i] ) ? module.first.first : edgesEta[i] ) ) *
+					((( module.second.second < edgesPhi[j] + widthPhi ) ? module.second.second : (edgesPhi[j] + widthPhi) )  - 
+					 ( ( module.second.first > edgesPhi[j] ) ? module.second.first : edgesPhi[j] ) ) 
+					) /  ( widthEta * widthPhi ); 
+			histo->Fill( centerEta[i], centerPhi[j], area );
+		}
+	return;
 }
 
 //====================================================================================================
@@ -2402,4 +2444,22 @@ bool SCTErrMonTool::SyncDisabledSCT()
 	}
 
 	return altered;
+}
+//====================================================================================================
+//                          SCTErrMonTool :: calculateDetectorCoverage, Keisuke Kouda 20/04/2016
+//====================================================================================================
+double SCTErrMonTool::calculateDetectorCoverage(TH2F * histo)
+{
+	double detector_coverage;
+	int occupancy;
+	double cell;
+	
+	for( unsigned int i = 0; i < c_nBinsEta; i++){
+		for( unsigned int j = 0; j < c_nBinsEta; j++){
+			cell = histo->GetCellContent(i+1,j+1);
+			if(cell > 2.5) occupancy ++;
+		}
+	}
+	detector_coverage = 100. * double( occupancy )/( double( c_nBinsEta ) * double ( c_nBinsPhi ) );
+	return  detector_coverage;
 }
