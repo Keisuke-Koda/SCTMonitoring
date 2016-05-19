@@ -2453,13 +2453,15 @@ double SCTErrMonTool::calculateDetectorCoverage(TH2F * histo)
 	double detector_coverage;
 	int occupancy;
 	double cell;
+	const int etaBins = 50;
+	const int phiBins = 50; 
 	
-	for( unsigned int i = 0; i < c_nBinsEta; i++){
-		for( unsigned int j = 0; j < c_nBinsEta; j++){
+	for( unsigned int i = 0; i < etaBins; i++){
+		for( unsigned int j = 0; j < phiBins; j++){
 			cell = histo->GetCellContent(i+1,j+1);
 			if(cell > 2.5) occupancy ++;
 		}
 	}
-	detector_coverage = 100. * double( occupancy )/( double( c_nBinsEta ) * double ( c_nBinsPhi ) );
+	detector_coverage = 100. * double( occupancy )/( double( etaBins ) * double ( phiBins ) );
 	return  detector_coverage;
 }
