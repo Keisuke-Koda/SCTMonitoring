@@ -2462,5 +2462,6 @@ double SCTErrMonTool::calculateDetectorCoverage(TH2F * histo)
 			if(cell > 2.5) occupancy ++;
 		}
 	detector_coverage = 100. * double( occupancy )/( double( etaBins ) * double ( phiBins ) );
+	ATH_MSG_INFO("Detector Coverage : " << detector_coverage);
 	return  detector_coverage;
 }
