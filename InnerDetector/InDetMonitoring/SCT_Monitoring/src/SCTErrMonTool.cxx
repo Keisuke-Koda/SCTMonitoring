@@ -2450,18 +2450,17 @@ bool SCTErrMonTool::SyncDisabledSCT()
 //====================================================================================================
 double SCTErrMonTool::calculateDetectorCoverage(TH2F * histo)
 {
-	double detector_coverage;
-	int occupancy;
-	double cell;
-	const int etaBins = 50;
-	const int phiBins = 50; 
+	double detector_coverage = 0.;
+	int occupancy = 0;
+	double cell = 0.;
+	const int etaBins = 10;
+	const int phiBins = 10; 
 	
-	for( unsigned int i = 0; i < etaBins; i++){
+	for( unsigned int i = 0; i < etaBins; i++)
 		for( unsigned int j = 0; j < phiBins; j++){
 			cell = histo->GetCellContent(i+1,j+1);
 			if(cell > 2.5) occupancy ++;
 		}
-	}
 	detector_coverage = 100. * double( occupancy )/( double( etaBins ) * double ( phiBins ) );
 	return  detector_coverage;
 }
