@@ -450,9 +450,18 @@ StatusCode SCTErrMonTool::fillHistograms(){
   ATH_CHECK(evtStore()->retrieve(p_rdocontainer,m_dataObjectName));
   Identifier SCT_Identifier;
 //bad modules histo
-	m_disabledModulesMapSCT->Reset("ICE");
-	m_errorModulesMapSCT->Reset("ICE");
-	m_totalModulesMapSCT->Reset("ICE");
+	if(m_current_lb != m_last_reset_lb){
+		m_disabledModulesMapSCT->Reset("ICE");
+		m_errorModulesMapSCT->Reset("ICE");
+		m_totalModulesMapSCT->Reset("ICE");
+	}
+	for (unsigned int etaBin = 0; etaBin < m_nBinsEta; etaBin++ ){
+		for (unsigned int phiBin = 0; phiBin < m_nBinsPhi; phiBin++ ){
+			m_disabledCell[etaBin][phiBin] = 0.;
+			m_errorCell[etaBin][phiBin] = 0.;
+			m_totalCell[etaBin][phiBin] = 0.;
+		}
+	}
 
 	SyncDisabledSCT();
 	SyncErrorSCT();
