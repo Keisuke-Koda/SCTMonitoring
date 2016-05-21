@@ -291,9 +291,9 @@ SCTErrMonTool::SCTErrMonTool(const std::string & type,const std::string & name,c
 	 m_disabledModulesMapSCT(nullptr),
 	 m_errorModulesMapSCT(nullptr),
 	 m_totalModulesMapSCT(nullptr),
-	 m_nBinsEta( 200 ),
+	 m_nBinsEta( 100 ),
 	 m_rangeEta( 2.5 ),
-	 m_nBinsPhi( 200 ),
+	 m_nBinsPhi( 100 ),
 	 m_disabledCell{},
 	 m_errorCell{},
 	 m_totalCell{},
@@ -2356,8 +2356,8 @@ void SCTErrMonTool::fillModule( moduleGeo_t module, TH2F * histo )
 
 	double widthEta = 2. * m_rangeEta / m_nBinsEta;
 	double widthPhi = 2. * M_PI / m_nBinsPhi;
-	double edgesEta[200], centerEta[200],
-				 edgesPhi[200], centerPhi[200];
+	double edgesEta[100], centerEta[100],
+				 edgesPhi[100], centerPhi[100];
 
 	histo->GetXaxis()->GetLowEdge(edgesEta); 
 	histo->GetXaxis()->GetCenter(centerEta); 
