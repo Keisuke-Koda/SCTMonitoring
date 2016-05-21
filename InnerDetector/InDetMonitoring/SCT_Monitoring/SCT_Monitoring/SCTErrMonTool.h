@@ -328,12 +328,12 @@ class SCTErrMonTool : public ManagedMonitorToolBase
   bool SyncErrorSCT();
 
   void fillModule( moduleGeo_t module, TH2F * histo );
-	double calculateDetectorCoverage( TH2F * histo );
+	float calculateDetectorCoverage(TH2F * histo );
 
   const InDetDD::SCT_DetectorManager * m_sctManager;
 
-  geoContainer_t m_errorGeoSCT;
   geoContainerPure_t m_disabledGeoSCT;
+  geoContainer_t m_errorGeoSCT;
 
   TH2F * m_disabledModulesMapSCT;
   TH2F * m_errorModulesMapSCT;
@@ -343,15 +343,16 @@ class SCTErrMonTool : public ManagedMonitorToolBase
   const float 		 c_rangeEta;
   const unsigned int c_nBinsPhi;
 
+
   TProfile * m_DisabledDetectorCoverageVsLB;
   TProfile * m_ErrorDetectorCoverageVsLB;
   TProfile * m_TotalDetectorCoverageVsLB;
   TH1F * m_MaxDisabledDetectorCoverageVsLB;
   TH1F * m_MaxErrorDetectorCoverageVsLB;
   TH1F * m_MaxTotalDetectorCoverageVsLB;
-	double m_disabledDetectorCoverageMax;
-	double m_errorDetectorCoverageMax;
-	double m_totalDetectorCoverageMax;
+	float m_disabledDetectorCoverageMax;
+	float m_errorDetectorCoverageMax;
+	float m_totalDetectorCoverageMax;
 	
 };
 

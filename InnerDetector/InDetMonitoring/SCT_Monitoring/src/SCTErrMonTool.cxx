@@ -294,9 +294,16 @@ SCTErrMonTool::SCTErrMonTool(const std::string & type,const std::string & name,c
 	 c_nBinsEta( 200 ),
 	 c_rangeEta( 2.5 ),
 	 c_nBinsPhi( 200 ),
+	 //m_modCell[c_nBinsEta][c_nBinsPhi];
 	 
-	 m_errorDetectorCoverageMax{},
+	 m_DisabledDetectorCoverageVsLB{},
+	 m_ErrorDetectorCoverageVsLB{},
+	 m_TotalDetectorCoverageVsLB{},
+	 m_MaxDisabledDetectorCoverageVsLB{},
+	 m_MaxErrorDetectorCoverageVsLB{},
+	 m_MaxTotalDetectorCoverageVsLB{},
 	 m_disabledDetectorCoverageMax{},
+	 m_errorDetectorCoverageMax{},
 	 m_totalDetectorCoverageMax{}
 {
 /** sroe 3 Sept 2015:
@@ -445,8 +452,8 @@ StatusCode SCTErrMonTool::fillHistograms(){
 	m_errorModulesMapSCT->Reset("ICE");
 	m_totalModulesMapSCT->Reset("ICE");
 
-	SyncErrorSCT();
 	SyncDisabledSCT();
+	SyncErrorSCT();
 
 	{
 		geoContainerPure_t::iterator currIt = m_disabledGeoSCT.begin();
@@ -904,31 +911,31 @@ StatusCode SCTErrMonTool::fillByteStreamErrors() {
     }
   }
 
-	double disabled_detector_coverage = 0;
-	double error_detector_coverage = 0;
-	double total_detector_coverage = 0;
+	float disabled_detector_coverage_loss = 0;
+	float error_detector_coverage_loss = 0;
+	float total_detector_coverage_loss = 0;
 	m_disabledDetectorCoverageMax = 0;
 	m_errorDetectorCoverageMax = 0;
 	m_totalDetectorCoverageMax = 0;
 
-	disabled_detector_coverage = calculateDetectorCoverage(m_disabledModulesMapSCT);
-	error_detector_coverage = calculateDetectorCoverage(m_errorModulesMapSCT);
-	total_detector_coverage = calculateDetectorCoverage(m_totalModulesMapSCT);
+	disabled_detector_coverage_loss = calculateDetectorCoverage(m_disabledModulesMapSCT);
+	error_detector_coverage_loss = calculateDetectorCoverage(m_errorModulesMapSCT);
+	total_detector_coverage_loss = calculateDetectorCoverage(m_totalModulesMapSCT);
 
-  m_DisabledDetectorCoverageVsLB->Fill((int)current_lb,disabled_detector_coverage);
-  m_ErrorDetectorCoverageVsLB->Fill((int)current_lb,error_detector_coverage);
-  m_TotalDetectorCoverageVsLB->Fill((int)current_lb,total_detector_coverage);
+  m_DisabledDetectorCoverageVsLB->Fill((int)current_lb,double(disabled_detector_coverage_loss));
+  m_ErrorDetectorCoverageVsLB->Fill((int)current_lb,double(error_detector_coverage_loss));
+  m_TotalDetectorCoverageVsLB->Fill((int)current_lb,double(total_detector_coverage_loss));
 
-	if(m_disabledDetectorCoverageMax<disabled_detector_coverage){
-		m_disabledDetectorCoverageMax=disabled_detector_coverage;
+	if(m_disabledDetectorCoverageMax<disabled_detector_coverage_loss){
+		m_disabledDetectorCoverageMax=disabled_detector_coverage_loss;
 		m_MaxDisabledDetectorCoverageVsLB->SetBinContent((int)current_lb,m_disabledDetectorCoverageMax);
 	}
-	if(m_errorDetectorCoverageMax<error_detector_coverage){
-		m_errorDetectorCoverageMax=error_detector_coverage;
+	if(m_errorDetectorCoverageMax<error_detector_coverage_loss){
+		m_errorDetectorCoverageMax=error_detector_coverage_loss;
 		m_MaxErrorDetectorCoverageVsLB->SetBinContent((int)current_lb,m_errorDetectorCoverageMax);
 	}
-	if(m_totalDetectorCoverageMax<total_detector_coverage){
-		m_totalDetectorCoverageMax=total_detector_coverage;
+	if(m_totalDetectorCoverageMax<total_detector_coverage_loss){
+		m_totalDetectorCoverageMax=total_detector_coverage_loss;
 		m_MaxTotalDetectorCoverageVsLB->SetBinContent((int)current_lb,m_totalDetectorCoverageMax);
 	}
 
@@ -2322,11 +2329,11 @@ void SCTErrMonTool::fillModule( moduleGeo_t module, TH2F * histo )
 	unsigned int highX = 0;
 	unsigned int lowY  = 0;
 	unsigned int highY = 0;
-	double area = 0.;
+	float area = 0.;
 
-	double widthEta = 2. * c_rangeEta / c_nBinsEta;
-	double widthPhi = 2. * M_PI / c_nBinsPhi;
-	double edgesEta[200], centerEta[200],
+	float widthEta = 2. * c_rangeEta / c_nBinsEta;
+	float widthPhi = 2. * M_PI / c_nBinsPhi;
+	float edgesEta[200], centerEta[200],
 				 edgesPhi[200], centerPhi[200];
 
 	histo->GetXaxis()->GetLowEdge(edgesEta); 
@@ -2377,8 +2384,8 @@ void SCTErrMonTool::fillModule( moduleGeo_t module, TH2F * histo )
 //====================================================================================================
 bool SCTErrMonTool::SyncErrorSCT()
 {
-	double rz = 0;
-	double deltaZ = 0;
+	float rz = 0;
+	float deltaZ = 0;
 
 	m_errorGeoSCT.clear();
 
@@ -2414,8 +2421,8 @@ bool SCTErrMonTool::SyncErrorSCT()
 bool SCTErrMonTool::SyncDisabledSCT()
 {
 	bool altered = false;
-	double rz = 0;
-	double deltaZ = 0;
+	float rz = 0;
+	float deltaZ = 0;
 
 	m_disabledGeoSCT.clear();
 	std::set<Identifier>* badModules = m_ConfigurationSvc->badModules();
@@ -2448,20 +2455,79 @@ bool SCTErrMonTool::SyncDisabledSCT()
 //====================================================================================================
 //                          SCTErrMonTool :: calculateDetectorCoverage, Keisuke Kouda 20/04/2016
 //====================================================================================================
-double SCTErrMonTool::calculateDetectorCoverage(TH2F * histo)
+float SCTErrMonTool::calculateDetectorCoverage(TH2F * histo)
 {
-	double detector_coverage = 0.;
+	float detector_coverage_loss = 0.;
 	int occupancy = 0;
-	double cell = 0.;
-	const int etaBins = 10;
-	const int phiBins = 10; 
+	float cell = 0.;
+	const int etaBins = 50;
+	const int phiBins = 50; 
 	
 	for( unsigned int i = 0; i < etaBins; i++)
 		for( unsigned int j = 0; j < phiBins; j++){
-			cell = histo->GetCellContent(i+1,j+1);
-			if(cell > 2.5) occupancy ++;
+			cell = histo->GetBinContent(i+1,j+1);
+			if(cell < 1.5) occupancy ++;
 		}
-	detector_coverage = 100. * double( occupancy )/( double( etaBins ) * double ( phiBins ) );
-	ATH_MSG_INFO("Detector Coverage : " << detector_coverage);
-	return  detector_coverage;
+	detector_coverage_loss = 100. * (1. - float( occupancy )/( float( etaBins ) * float ( phiBins ) ) );
+	ATH_MSG_INFO("Detector Coverage Loss : " << detector_coverage_loss);
+	return  detector_coverage_loss;
 }
+//====================================================================================================
+//                          SCTErrMonTool :: calculateDeadModule, Keisuke Kouda 20/04/2016
+//====================================================================================================
+/*
+void SCTErrMonTool::calculateDeadModule( moduleGeo_t module, TH2F * histo )
+{
+	unsigned int lowX  = 0;
+	unsigned int highX = 0;
+	unsigned int lowY  = 0;
+	unsigned int highY = 0;
+	float area = 0.;
+
+	float widthEta = 2. * c_rangeEta / c_nBinsEta;
+	float widthPhi = 2. * M_PI / c_nBinsPhi;
+	float edgesEta[c_nBinsEta], centerEta[c_nBinsEta],
+				 edgesPhi[c_nBinsPhi], centerPhi[c_nBinsPhi];
+
+	histo->GetXaxis()->GetLowEdge(edgesEta); 
+	histo->GetXaxis()->GetCenter(centerEta); 
+	histo->GetYaxis()->GetLowEdge(edgesPhi); 
+	histo->GetYaxis()->GetCenter(centerPhi); 
+
+	for ( unsigned int i = 0; i < c_nBinsEta; i++)
+		if( edgesEta[i] + widthEta > module.first.first )
+		{
+			lowX = i;
+			break;
+		}
+	for ( unsigned int i = lowX; i < c_nBinsEta; i++)
+		if( edgesEta[i] > module.first.second )
+		{
+			highX = i;
+			break;
+		}
+	for ( unsigned int i = 0; i < c_nBinsPhi; i++)
+		if( edgesPhi[i] + widthPhi > module.second.first )
+		{
+			lowY = i;
+			break;
+		}
+	for ( unsigned int i = lowY; i < c_nBinsPhi; i++)
+		if( edgesPhi[i] > module.second.second )
+		{
+			highY = i;
+			break;
+		}
+	for ( unsigned int i = lowX; i < highX; i++ )
+		for ( unsigned int j = lowY; j < highY; j++ )
+		{
+		modCell[i][j]	 = (
+					((( module.first.second < edgesEta[i] + widthEta ) ? module.first.second : (edgesEta[i] + widthEta) )  - 
+					 ( ( module.first.first > edgesEta[i] ) ? module.first.first : edgesEta[i] ) ) *
+					((( module.second.second < edgesPhi[j] + widthPhi ) ? module.second.second : (edgesPhi[j] + widthPhi) )  - 
+					 ( ( module.second.first > edgesPhi[j] ) ? module.second.first : edgesPhi[j] ) ) 
+					) /  ( widthEta * widthPhi ); 
+		}
+	return;
+}
+*/
