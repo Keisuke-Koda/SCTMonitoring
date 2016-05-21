@@ -291,9 +291,9 @@ SCTErrMonTool::SCTErrMonTool(const std::string & type,const std::string & name,c
 	 m_disabledModulesMapSCT(nullptr),
 	 m_errorModulesMapSCT(nullptr),
 	 m_totalModulesMapSCT(nullptr),
-	 c_nBinsEta( 200 ),
-	 c_rangeEta( 2.5 ),
-	 c_nBinsPhi( 200 ),
+	 m_nBinsEta( 200 ),
+	 m_rangeEta( 2.5 ),
+	 m_nBinsPhi( 200 ),
 	 m_disabledCell{},
 	 m_errorCell{},
 	 m_totalCell{},
@@ -412,16 +412,16 @@ StatusCode SCTErrMonTool::bookHistogramsRecurrent()
 	if ( newRun )
 	{
 		m_disabledModulesMapSCT   = new TH2F( "disabledModulesMapSCT", "Map of disabled modules for SCT", 
-				c_nBinsEta, -c_rangeEta, c_rangeEta, 
-				c_nBinsPhi, -M_PI, M_PI );
+				m_nBinsEta, -m_rangeEta, m_rangeEta, 
+				m_nBinsPhi, -M_PI, M_PI );
 
 		m_errorModulesMapSCT   = new TH2F( "errorModulesMapSCT", "Map of bad modules for SCT", 
-				c_nBinsEta, -c_rangeEta, c_rangeEta, 
-				c_nBinsPhi, -M_PI, M_PI );
+				m_nBinsEta, -m_rangeEta, m_rangeEta, 
+				m_nBinsPhi, -M_PI, M_PI );
 
 		m_totalModulesMapSCT   = new TH2F( "totalModulesMapSCT", "Map of all bad and disabled modules for SCT", 
-				c_nBinsEta, -c_rangeEta, c_rangeEta, 
-				c_nBinsPhi, -M_PI, M_PI );
+				m_nBinsEta, -m_rangeEta, m_rangeEta, 
+				m_nBinsPhi, -M_PI, M_PI );
 
 		status &= monGr_shift.regHist( m_disabledModulesMapSCT ).isSuccess();
 		status &= monGr_shift.regHist( m_errorModulesMapSCT ).isSuccess();
@@ -479,9 +479,9 @@ StatusCode SCTErrMonTool::fillHistograms(){
 
 	m_totalModulesMapSCT->Add( m_disabledModulesMapSCT );
 	m_totalModulesMapSCT->Add( m_errorModulesMapSCT );
-	for (int i = 0; i < c_nBinsEta; i++ ){
-		for (int j = 0; j < c_nBinsPhi; j++ ){
-			m_totalCell[i][j] = m_disabledCell[i][j] + m_errorCell[i][j];
+	for (unsigned int etaBin = 0; etaBin < m_nBinsEta; etaBin++ ){
+		for (unsigned int phiBin = 0; phiBin < m_nBinsPhi; phiBin++ ){
+			m_totalCell[etaBin][phiBin] = m_disabledCell[etaBin][phiBin] + m_errorCell[etaBin][phiBin];
 		}
 	}
 	
@@ -2345,8 +2345,8 @@ void SCTErrMonTool::fillModule( moduleGeo_t module, TH2F * histo )
 	unsigned int highY = 0;
 	double area = 0.;
 
-	double widthEta = 2. * c_rangeEta / c_nBinsEta;
-	double widthPhi = 2. * M_PI / c_nBinsPhi;
+	double widthEta = 2. * m_rangeEta / m_nBinsEta;
+	double widthPhi = 2. * M_PI / m_nBinsPhi;
 	double edgesEta[200], centerEta[200],
 				 edgesPhi[200], centerPhi[200];
 
@@ -2355,33 +2355,32 @@ void SCTErrMonTool::fillModule( moduleGeo_t module, TH2F * histo )
 	histo->GetYaxis()->GetLowEdge(edgesPhi); 
 	histo->GetYaxis()->GetCenter(centerPhi); 
 
-	for ( unsigned int i = 0; i < c_nBinsEta; i++)
+	for ( unsigned int i = 0; i < m_nBinsEta; i++)
 		if( edgesEta[i] + widthEta > module.first.first )
 		{
 			lowX = i;
 			break;
 		}
-	for ( unsigned int i = lowX; i < c_nBinsEta; i++)
+	for ( unsigned int i = lowX; i < m_nBinsEta; i++)
 		if( edgesEta[i] > module.first.second )
 		{
 			highX = i;
 			break;
 		}
-	for ( unsigned int i = 0; i < c_nBinsPhi; i++)
+	for ( unsigned int i = 0; i < m_nBinsPhi; i++)
 		if( edgesPhi[i] + widthPhi > module.second.first )
 		{
 			lowY = i;
 			break;
 		}
-	for ( unsigned int i = lowY; i < c_nBinsPhi; i++)
+	for ( unsigned int i = lowY; i < m_nBinsPhi; i++)
 		if( edgesPhi[i] > module.second.second )
 		{
 			highY = i;
 			break;
 		}
-	for ( unsigned int i = lowX; i < highX; i++ )
-		for ( unsigned int j = lowY; j < highY; j++ )
-		{
+	for ( unsigned int i = lowX; i < highX; i++ ){
+		for ( unsigned int j = lowY; j < highY; j++ ){
 			area = (
 					((( module.first.second < edgesEta[i] + widthEta ) ? module.first.second : (edgesEta[i] + widthEta) )  - 
 					 ( ( module.first.first > edgesEta[i] ) ? module.first.first : edgesEta[i] ) ) *
@@ -2390,6 +2389,7 @@ void SCTErrMonTool::fillModule( moduleGeo_t module, TH2F * histo )
 					) /  ( widthEta * widthPhi ); 
 			histo->Fill( centerEta[i], centerPhi[j], area );
 		}
+	}
 	return;
 }
 
@@ -2444,8 +2444,7 @@ bool SCTErrMonTool::SyncDisabledSCT()
 	std::set<Identifier>::iterator fitEnd = badModules->end();
 
 	// Check that all modules are registered
-	for (; fit != fitEnd; ++fit)
-	{
+	for (; fit != fitEnd; ++fit){
 		// The module is already registered, no need to do something
 		if ( m_disabledGeoSCT.count( (*fit) ) )
 			continue;
@@ -2469,17 +2468,18 @@ bool SCTErrMonTool::SyncDisabledSCT()
 //====================================================================================================
 //                          SCTErrMonTool :: calculateDetectorCoverage, Keisuke Kouda 20/04/2016
 //====================================================================================================
-float SCTErrMonTool::calculateDetectorCoverageLoss( const double moduleCell[c_nBinsEta][c_nBinsPhi] )
+double SCTErrMonTool::calculateDetectorCoverageLoss( const double moduleCell[100][100] )
 {
-	float detector_coverage_loss = 0.;
+	double detector_coverage_loss = 0.;
 	int occupancy = 0;
 	const int etaBins = 100;
 	const int phiBins = 100; 
 	
-	for( unsigned int i = 0; i < etaBins; i++)
+	for( unsigned int i = 0; i < etaBins; i++){
 		for( unsigned int j = 0; j < phiBins; j++){
 			if(moduleCell[i][j] < 1.5) occupancy ++;
 		}
+	}
 	detector_coverage_loss = 100. * (1. - double( occupancy )/( double( etaBins ) * double ( phiBins ) ) );
 	ATH_MSG_INFO("Detector Coverage Loss : " << detector_coverage_loss);
 	return  detector_coverage_loss;
@@ -2487,56 +2487,56 @@ float SCTErrMonTool::calculateDetectorCoverageLoss( const double moduleCell[c_nB
 //====================================================================================================
 //                          SCTErrMonTool :: calculateDeadModule, Keisuke Kouda 20/04/2016
 //====================================================================================================
-void SCTErrMonTool::calculateDeadModule( moduleGeo_t module, double moduleCell[c_nBinsEta][c_nBinsPhi] )
+void SCTErrMonTool::calculateDeadModule( moduleGeo_t module, double moduleCell[100][100] )
 {
 	unsigned int lowX  = 0;
 	unsigned int highX = 0;
 	unsigned int lowY  = 0;
 	unsigned int highY = 0;
 
-	double widthEta = 2. * c_rangeEta / c_nBinsEta;
-	double widthPhi = 2. * M_PI / c_nBinsPhi;
-	double edgesEta[c_nBinsEta], edgesPhi[c_nBinsPhi];
+	double widthEta = 2. * m_rangeEta / m_nBinsEta;
+	double widthPhi = 2. * M_PI / m_nBinsPhi;
+	double edgesEta[100], edgesPhi[100];
 	
-	for ( unsigned int i = 0; i < c_nBinsEta; i++)
-		edgesEta[i] = - c_rangeEta + widthEta * (double) i ;
-	for ( unsigned int i = 0; i < c_nBinsPhi; i++)
+	for ( unsigned int i = 0; i < m_nBinsEta; i++)
+		edgesEta[i] = - m_rangeEta + widthEta * (double) i ;
+	for ( unsigned int i = 0; i < m_nBinsPhi; i++)
 		edgesPhi[i] = - M_PI + widthPhi * (double) i ;
 
 
-	for ( unsigned int i = 0; i < c_nBinsEta; i++)
+	for ( unsigned int i = 0; i < m_nBinsEta; i++)
 		if( edgesEta[i] + widthEta > module.first.first )
 		{
 			lowX = i;
 			break;
 		}
-	for ( unsigned int i = lowX; i < c_nBinsEta; i++)
+	for ( unsigned int i = lowX; i < m_nBinsEta; i++)
 		if( edgesEta[i] > module.first.second )
 		{
 			highX = i;
 			break;
 		}
-	for ( unsigned int i = 0; i < c_nBinsPhi; i++)
+	for ( unsigned int i = 0; i < m_nBinsPhi; i++)
 		if( edgesPhi[i] + widthPhi > module.second.first )
 		{
 			lowY = i;
 			break;
 		}
-	for ( unsigned int i = lowY; i < c_nBinsPhi; i++)
+	for ( unsigned int i = lowY; i < m_nBinsPhi; i++)
 		if( edgesPhi[i] > module.second.second )
 		{
 			highY = i;
 			break;
 		}
-	for ( unsigned int i = lowX; i < highX; i++ )
-		for ( unsigned int j = lowY; j < highY; j++ )
-		{
-		moduleCell[i][j]	 = (
+	for ( unsigned int i = lowX; i < highX; i++ ){
+		for ( unsigned int j = lowY; j < highY; j++ ){
+		moduleCell[i][j]	+= (
 					((( module.first.second < edgesEta[i] + widthEta ) ? module.first.second : (edgesEta[i] + widthEta) )  - 
 					 ( ( module.first.first > edgesEta[i] ) ? module.first.first : edgesEta[i] ) ) *
 					((( module.second.second < edgesPhi[j] + widthPhi ) ? module.second.second : (edgesPhi[j] + widthPhi) )  - 
 					 ( ( module.second.first > edgesPhi[j] ) ? module.second.first : edgesPhi[j] ) ) 
 					) /  ( widthEta * widthPhi ); 
 		}
+	}
 	return;
 }

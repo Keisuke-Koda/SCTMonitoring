@@ -328,8 +328,8 @@ class SCTErrMonTool : public ManagedMonitorToolBase
   bool SyncErrorSCT();
 
   void fillModule( moduleGeo_t module, TH2F * histo );
-	double calculateDetectorCoverageLoss( );
-	void calculateDeadModule( moduleGeo_t module, double moduleCell[c_nBinsEta][c_nBinsPhi] )
+	double calculateDetectorCoverageLoss(const double moduleCell[100][100] );
+	void calculateDeadModule( moduleGeo_t module, double moduleCell[100][100] );
 
   const InDetDD::SCT_DetectorManager * m_sctManager;
 
@@ -340,13 +340,13 @@ class SCTErrMonTool : public ManagedMonitorToolBase
   TH2F * m_errorModulesMapSCT;
   TH2F * m_totalModulesMapSCT;
 
-  const unsigned int c_nBinsEta;
-  const double 		 c_rangeEta;
-  const unsigned int c_nBinsPhi;
+  const unsigned int m_nBinsEta;
+  const double 		 m_rangeEta;
+  const unsigned int m_nBinsPhi;
 
-	double m_disabledCell[c_nBinsEta][c_nBinsPhi];
-	double m_errorCell[c_nBinsEta][c_nBinsPhi];
-	double m_totalCell[c_nBinsEta][c_nBinsPhi];
+	double m_disabledCell[100][100];
+	double m_errorCell[100][100];
+	double m_totalCell[100][100];
 
   TProfile * m_DisabledDetectorCoverageLossVsLB;
   TProfile * m_ErrorDetectorCoverageLossVsLB;
