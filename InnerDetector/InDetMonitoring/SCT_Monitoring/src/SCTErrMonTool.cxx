@@ -160,6 +160,7 @@ SCTErrMonTool::SCTErrMonTool(const std::string & type,const std::string & name,c
   	m_MaskedLinks{},
   	m_numberOfEventsLumi{},
   	m_numberOfEvents{},
+		m_numberOfPreEvents{},
   	m_initialize{},
   	m_previous_lb{},
   	m_maskedLinkErrsMax{},
@@ -285,6 +286,7 @@ SCTErrMonTool::SCTErrMonTool(const std::string & type,const std::string & name,c
     //m_errThreshold{}, property
     //m_effThreshold{}, property
     //m_noiseThreshold{}, property
+
 	 m_sctManager( 0 ),
 	 m_disabledGeoSCT(),
 	 m_errorGeoSCT(),
@@ -294,19 +296,23 @@ SCTErrMonTool::SCTErrMonTool(const std::string & type,const std::string & name,c
 	 m_nBinsEta( 100 ),
 	 m_rangeEta( 2.5 ),
 	 m_nBinsPhi( 100 ),
+/*
 	 m_disabledCell{},
 	 m_errorCell{},
 	 m_totalCell{},
-	 
+*/	 
 	 m_DisabledDetectorCoverageLossVsLB{},
 	 m_ErrorDetectorCoverageLossVsLB{},
 	 m_TotalDetectorCoverageLossVsLB{},
+	 /*
 	 m_MaxDisabledDetectorCoverageLossVsLB{},
 	 m_MaxErrorDetectorCoverageLossVsLB{},
 	 m_MaxTotalDetectorCoverageLossVsLB{},
+	 */
 	 m_disabledDetectorCoverageLossMax{},
 	 m_errorDetectorCoverageLossMax{},
 	 m_totalDetectorCoverageLossMax{}
+
 {
 /** sroe 3 Sept 2015:
   histoPathBase is declared as a property in the base class, assigned to m_path
@@ -347,6 +353,7 @@ StatusCode SCTErrMonTool::initialize() {
 	}
 	return ManagedMonitorToolBase::initialize();
 }
+
 //====================================================================================================
 //====================================================================================================
 SCTErrMonTool::~SCTErrMonTool(){
@@ -411,6 +418,7 @@ StatusCode SCTErrMonTool::bookHistogramsRecurrent()
 	bool status = true;
 	if ( newRun )
 	{
+		/*
 		m_disabledModulesMapSCT   = new TH2F( "disabledModulesMapSCT", "Map of disabled modules for SCT", 
 				m_nBinsEta, -m_rangeEta, m_rangeEta, 
 				m_nBinsPhi, -M_PI, M_PI );
@@ -422,6 +430,18 @@ StatusCode SCTErrMonTool::bookHistogramsRecurrent()
 		m_totalModulesMapSCT   = new TH2F( "totalModulesMapSCT", "Map of all bad and disabled modules for SCT", 
 				m_nBinsEta, -m_rangeEta, m_rangeEta, 
 				m_nBinsPhi, -M_PI, M_PI );
+		*/
+		m_disabledModulesMapSCT   = new TProfile2D( "disabledModulesMapSCT", "Map of disabled modules for SCT", 
+				m_nBinsEta, -m_rangeEta, m_rangeEta, 
+				m_nBinsPhi, -M_PI, M_PI );
+
+		m_errorModulesMapSCT   = new TProfile2D( "errorModulesMapSCT", "Map of bad modules for SCT", 
+				m_nBinsEta, -m_rangeEta, m_rangeEta, 
+				m_nBinsPhi, -M_PI, M_PI );
+
+		m_totalModulesMapSCT   = new TProfile2D( "totalModulesMapSCT", "Map of all bad and disabled modules for SCT", 
+				m_nBinsEta, -m_rangeEta, m_rangeEta, 
+				m_nBinsPhi, -M_PI, M_PI );
 
 		status &= monGr_shift.regHist( m_disabledModulesMapSCT ).isSuccess();
 		status &= monGr_shift.regHist( m_errorModulesMapSCT ).isSuccess();
@@ -430,6 +450,7 @@ StatusCode SCTErrMonTool::bookHistogramsRecurrent()
 
 	return ( status ) ? StatusCode::SUCCESS : StatusCode::FAILURE;
 }
+
 //====================================================================================================
 //                            SCTErrMonTool :: fillHistograms
 /// This is the real workhorse, called for each event. It retrieves the data each time 
@@ -449,19 +470,24 @@ StatusCode SCTErrMonTool::fillHistograms(){
   const SCT_RDO_Container* p_rdocontainer;
   ATH_CHECK(evtStore()->retrieve(p_rdocontainer,m_dataObjectName));
   Identifier SCT_Identifier;
+
 //bad modules histo
 	if(m_current_lb != m_last_reset_lb){
 		m_disabledModulesMapSCT->Reset("ICE");
 		m_errorModulesMapSCT->Reset("ICE");
 		m_totalModulesMapSCT->Reset("ICE");
 	}
-	for (unsigned int etaBin = 0; etaBin < m_nBinsEta; etaBin++ ){
-		for (unsigned int phiBin = 0; phiBin < m_nBinsPhi; phiBin++ ){
-			m_disabledCell[etaBin][phiBin] = 0.;
-			m_errorCell[etaBin][phiBin] = 0.;
-			m_totalCell[etaBin][phiBin] = 0.;
+	/*
+	if(m_numberOfEvents != m_numberOfPreEvents){
+		for (unsigned int etaBin = 0; etaBin < m_nBinsEta; etaBin++ ){
+			for (unsigned int phiBin = 0; phiBin < m_nBinsPhi; phiBin++ ){
+				m_disabledCell[etaBin][phiBin] = 0.;
+				m_errorCell[etaBin][phiBin] = 0.;
+				m_totalCell[etaBin][phiBin] = 0.;
+			}
 		}
 	}
+	*/
 
 	SyncDisabledSCT();
 	SyncErrorSCT();
@@ -471,28 +497,33 @@ StatusCode SCTErrMonTool::fillHistograms(){
 		geoContainerPure_t::iterator currEnd = m_disabledGeoSCT.end();
 		while (currIt != currEnd) {
 			fillModule( (*currIt).second, m_disabledModulesMapSCT );
-			calculateDeadModule( (*currIt).second, m_disabledCell );
+			//calculateDeadModule( (*currIt).second, m_disabledCell );
 			++currIt;
 		}
 	}
+	ATH_MSG_INFO("Disabled Detector Coverage Loss Fill Histogram");
 
 	{
 		geoContainer_t::iterator currIt = m_errorGeoSCT.begin();
 		geoContainer_t::iterator currEnd = m_errorGeoSCT.end();
 		while (currIt != currEnd) {
 			fillModule( (*currIt).second, m_errorModulesMapSCT );
-			calculateDeadModule( (*currIt).second, m_errorCell );
+			//calculateDeadModule( (*currIt).second, m_errorCell );
 			++currIt;
 		}
 	}
+	ATH_MSG_INFO("Error Detector Coverage Loss Fill Histogram");
 
 	m_totalModulesMapSCT->Add( m_disabledModulesMapSCT );
 	m_totalModulesMapSCT->Add( m_errorModulesMapSCT );
+	ATH_MSG_INFO("Total Detector Coverage Loss Fill Histogram");
+	/*
 	for (unsigned int etaBin = 0; etaBin < m_nBinsEta; etaBin++ ){
 		for (unsigned int phiBin = 0; phiBin < m_nBinsPhi; phiBin++ ){
 			m_totalCell[etaBin][phiBin] = m_disabledCell[etaBin][phiBin] + m_errorCell[etaBin][phiBin];
 		}
 	}
+	*/
 	
   //Define variables for error histograms
   int numFirstHit=0,     numSecondHit=0,      numSCTRDOs=0;
@@ -929,21 +960,34 @@ StatusCode SCTErrMonTool::fillByteStreamErrors() {
     }
   }
 
-	double disabled_detector_coverage_loss = 0;
-	double error_detector_coverage_loss = 0;
-	double total_detector_coverage_loss = 0;
+	if(endOfLumiBlock){
+		double disabled_detector_coverage_loss = 0;
+		double error_detector_coverage_loss = 0;
+		double total_detector_coverage_loss = 0;
+		disabled_detector_coverage_loss = calculateDetectorCoverageLoss(m_disabledModulesMapSCT);
+		ATH_MSG_INFO("Disabled Detector Coverage Loss : " << disabled_detector_coverage_loss);
+		error_detector_coverage_loss = calculateDetectorCoverageLoss(m_errorModulesMapSCT);
+		ATH_MSG_INFO("Error Detector Coverage Loss : " << error_detector_coverage_loss);
+		total_detector_coverage_loss = calculateDetectorCoverageLoss(m_totalModulesMapSCT);
+		ATH_MSG_INFO("Total Detector Coverage Loss : " << total_detector_coverage_loss);
+		m_DisabledDetectorCoverageLossVsLB->Fill((int)current_lb,double(disabled_detector_coverage_loss));
+		m_ErrorDetectorCoverageLossVsLB->Fill((int)current_lb,double(error_detector_coverage_loss));
+		m_TotalDetectorCoverageLossVsLB->Fill((int)current_lb,double(total_detector_coverage_loss));
+	}
+/*
+	 double disabled_detector_coverage_loss = 0;
+	 double error_detector_coverage_loss = 0;
+	 double total_detector_coverage_loss = 0;
 	m_disabledDetectorCoverageLossMax = 0;
 	m_errorDetectorCoverageLossMax = 0;
 	m_totalDetectorCoverageLossMax = 0;
 
-/*
-	disabled_detector_coverage_loss = calculateDetectorCoverage(m_disabledModulesMapSCT);
-	error_detector_coverage_loss = calculateDetectorCoverage(m_errorModulesMapSCT);
-	total_detector_coverage_loss = calculateDetectorCoverage(m_totalModulesMapSCT);
-*/
 	disabled_detector_coverage_loss = calculateDetectorCoverageLoss(m_disabledCell);
+	ATH_MSG_INFO("Disabled Detector Coverage Loss : " << disabled_detector_coverage_loss);
 	error_detector_coverage_loss = calculateDetectorCoverageLoss(m_errorCell);
+	ATH_MSG_INFO("Error Detector Coverage Loss : " << error_detector_coverage_loss);
 	total_detector_coverage_loss = calculateDetectorCoverageLoss(m_totalCell);
+	ATH_MSG_INFO("Total Detector Coverage Loss : " << total_detector_coverage_loss);
 
   m_DisabledDetectorCoverageLossVsLB->Fill((int)current_lb,double(disabled_detector_coverage_loss));
   m_ErrorDetectorCoverageLossVsLB->Fill((int)current_lb,double(error_detector_coverage_loss));
@@ -961,6 +1005,7 @@ StatusCode SCTErrMonTool::fillByteStreamErrors() {
 		m_totalDetectorCoverageLossMax=total_detector_coverage_loss;
 		m_MaxTotalDetectorCoverageLossVsLB->SetBinContent((int)current_lb,m_totalDetectorCoverageLossMax);
 	}
+*/
 
   m_MaskedLinks->Reset();
   int total_errors = 0; float cxb = 0; float cyb = 0; 
@@ -1098,6 +1143,7 @@ StatusCode SCTErrMonTool::fillByteStreamErrors() {
   }
   //}5.12.2014
   m_previous_lb = current_lb;
+	m_numberOfPreEvents = m_numberOfEvents;
   m_numberOfEvents++;
   m_numberOfEventsLumi++;
   return StatusCode::SUCCESS;
@@ -1612,17 +1658,21 @@ StatusCode  SCTErrMonTool::bookConfMaps(){
           m_MaxModulesWithErrorsVsLB[reg]->GetXaxis()->SetTitle("LumiBlock"); 
           // m_2d_MaxModulesWithErrorsVsLB[reg] = new TH2I(maxmoderrors[reg]+"_2d","Max num of links with errors per event in "+region[reg],n_lumiBins,0.5,n_lumiBins+0.5,8176,0,8176);
         }
- 
-          m_DisabledDetectorCoverageLossVsLB = new TProfile("SCTDisabledDetectorCoverageLossVsLbs","Ave. loss of disabled detector coverage per event in ",n_lumiBins,0.5,n_lumiBins+0.5);
+
+          //m_DisabledDetectorCoverageLossVsLB = new TProfile("SCTDisabledDetectorCoverageLossVsLbs","Ave. loss of disabled detector coverage per event in ",n_lumiBins,0.5,n_lumiBins+0.5);
+          m_DisabledDetectorCoverageLossVsLB = new TH1F("SCTDisabledDetectorCoverageLossVsLbs","Ave. loss of disabled detector coverage per event in ",n_lumiBins,0.5,n_lumiBins+0.5);
           m_DisabledDetectorCoverageLossVsLB->GetXaxis()->SetTitle("LumiBlock");
           m_DisabledDetectorCoverageLossVsLB->GetYaxis()->SetTitle("Loss of Disabled Detector Coverage");
-          m_ErrorDetectorCoverageLossVsLB = new TProfile("SCTErrorDetectorCoverageLossVsLbs","Ave. loss of error detector coverage per event in ",n_lumiBins,0.5,n_lumiBins+0.5);
+          //m_ErrorDetectorCoverageLossVsLB = new TProfile("SCTErrorDetectorCoverageLossVsLbs","Ave. loss of error detector coverage per event in ",n_lumiBins,0.5,n_lumiBins+0.5);
+          m_ErrorDetectorCoverageLossVsLB = new TH1F("SCTErrorDetectorCoverageLossVsLbs","Ave. loss of error detector coverage per event in ",n_lumiBins,0.5,n_lumiBins+0.5);
           m_ErrorDetectorCoverageLossVsLB->GetXaxis()->SetTitle("LumiBlock");
           m_ErrorDetectorCoverageLossVsLB->GetYaxis()->SetTitle("Loss of Error Detector Coverage");
-          m_TotalDetectorCoverageLossVsLB = new TProfile("SCTTotalDetectorCoverageLossVsLbs","Ave. loss of total detector coverage per event in ",n_lumiBins,0.5,n_lumiBins+0.5);
+          //m_TotalDetectorCoverageLossVsLB = new TProfile("SCTTotalDetectorCoverageLossVsLbs","Ave. loss of total detector coverage per event in ",n_lumiBins,0.5,n_lumiBins+0.5);
+          m_TotalDetectorCoverageLossVsLB = new TH1F("SCTTotalDetectorCoverageLossVsLbs","Ave. loss of total detector coverage per event in ",n_lumiBins,0.5,n_lumiBins+0.5);
           m_TotalDetectorCoverageLossVsLB->GetXaxis()->SetTitle("LumiBlock");
           m_TotalDetectorCoverageLossVsLB->GetYaxis()->SetTitle("Loss of Total Detector Coverage");
 					
+					/*
           m_MaxDisabledDetectorCoverageLossVsLB = new TH1F("SCTDisabledDetectorCoverageLossmaxVsLbs","Max loss of disabled detector coverage per event in ",n_lumiBins,0.5,n_lumiBins+0.5);
           m_MaxDisabledDetectorCoverageLossVsLB->GetXaxis()->SetTitle("LumiBlock");
           m_MaxDisabledDetectorCoverageLossVsLB->GetYaxis()->SetTitle("Max Loss of Disabled Dtector Coverage");
@@ -1632,6 +1682,7 @@ StatusCode  SCTErrMonTool::bookConfMaps(){
           m_MaxTotalDetectorCoverageLossVsLB = new TH1F("SCTTotalDetectorCoverageLossmaxVsLbs","Max loss of total detector coverage per event in ",n_lumiBins,0.5,n_lumiBins+0.5);
           m_MaxTotalDetectorCoverageLossVsLB->GetXaxis()->SetTitle("LumiBlock");
           m_MaxTotalDetectorCoverageLossVsLB->GetYaxis()->SetTitle("Max Loss of Total Dtector Coverage");
+					*/
 
 	for(int lyr=0; lyr<4; lyr++){
 	  m_LinksWithErrorsVsLBBarrel[lyr] = new TProfile("SCTLinksWithErrorsBarrel"+lyrerrors[lyr],"Ave. num of links with errors per event in Barrel "+layer[lyr],n_lumiBins,0.5,n_lumiBins+0.5);
@@ -1783,9 +1834,11 @@ StatusCode  SCTErrMonTool::bookConfMaps(){
       if ( ConfHist.regHist(m_ErrorDetectorCoverageLossVsLB).isFailure() ) msg(MSG::WARNING) << "Cannot book Histogram:SCTSCTErrorDetectorCoverageLossConf" << endreq;
       if ( ConfHist.regHist(m_TotalDetectorCoverageLossVsLB).isFailure() ) msg(MSG::WARNING) << "Cannot book Histogram:SCTSCTTotalDetectorCoverageLossConf" << endreq;
 
+/*
       if ( ConfHist.regHist(m_MaxDisabledDetectorCoverageLossVsLB).isFailure() ) msg(MSG::WARNING) << "Cannot book Histogram:SCTDisabledDetectorCoverageLossConf" << endreq;
       if ( ConfHist.regHist(m_MaxErrorDetectorCoverageLossVsLB).isFailure() ) msg(MSG::WARNING) << "Cannot book Histogram:SCTErrorDetectorCoverageLossConf" << endreq;
       if ( ConfHist.regHist(m_MaxTotalDetectorCoverageLossVsLB).isFailure() ) msg(MSG::WARNING) << "Cannot book Histogram:SCTTotalDetectorCoverageLossConf" << endreq;
+			*/
 
       for(int reg=0;reg<4;reg++){
 	// if ( ConfHist2D.regHist(m_2d_MaxMaskedLinksVsLB[reg]).isFailure() ) msg(MSG::WARNING) << "Cannot book Histogram:SCTMaskedLinkConf" << endreq;
@@ -2343,10 +2396,12 @@ SCTErrMonTool::prof2Factory(const std::string & name, const std::string & title,
     return moduleinEndcapA;
   }
 
+
 //====================================================================================================
 //                          SCTErrMonTool :: fillModule, Keisuke Kouda 20/04/2016
 //====================================================================================================
-void SCTErrMonTool::fillModule( moduleGeo_t module, TH2F * histo )
+//void SCTErrMonTool::fillModule( moduleGeo_t module, TH2F * histo )
+void SCTErrMonTool::fillModule( moduleGeo_t module, TProfile2D * profile )
 {
 	unsigned int lowX  = 0;
 	unsigned int highX = 0;
@@ -2359,10 +2414,10 @@ void SCTErrMonTool::fillModule( moduleGeo_t module, TH2F * histo )
 	double edgesEta[100], centerEta[100],
 				 edgesPhi[100], centerPhi[100];
 
-	histo->GetXaxis()->GetLowEdge(edgesEta); 
-	histo->GetXaxis()->GetCenter(centerEta); 
-	histo->GetYaxis()->GetLowEdge(edgesPhi); 
-	histo->GetYaxis()->GetCenter(centerPhi); 
+	profile->GetXaxis()->GetLowEdge(edgesEta); 
+	profile->GetXaxis()->GetCenter(centerEta); 
+	profile->GetYaxis()->GetLowEdge(edgesPhi); 
+	profile->GetYaxis()->GetCenter(centerPhi); 
 
 	for ( unsigned int i = 0; i < m_nBinsEta; i++)
 		if( edgesEta[i] + widthEta > module.first.first )
@@ -2396,7 +2451,7 @@ void SCTErrMonTool::fillModule( moduleGeo_t module, TH2F * histo )
 					((( module.second.second < edgesPhi[j] + widthPhi ) ? module.second.second : (edgesPhi[j] + widthPhi) )  - 
 					 ( ( module.second.first > edgesPhi[j] ) ? module.second.first : edgesPhi[j] ) ) 
 					) /  ( widthEta * widthPhi ); 
-			histo->Fill( centerEta[i], centerPhi[j], area );
+			profile->Fill( centerEta[i], centerPhi[j], area );
 		}
 	}
 	return;
@@ -2477,6 +2532,24 @@ bool SCTErrMonTool::SyncDisabledSCT()
 //====================================================================================================
 //                          SCTErrMonTool :: calculateDetectorCoverage, Keisuke Kouda 20/04/2016
 //====================================================================================================
+double SCTErrMonTool::calculateDetectorCoverageLoss( const TProfile2D * profile )
+{
+	double detector_coverage_loss = 0.;
+	int occupancy = 0;
+	const int etaBins = 100;
+	const int phiBins = 100; 
+	double moduleCell;
+	
+	for( unsigned int i = 0; i < etaBins; i++){
+		for( unsigned int j = 0; j < phiBins; j++){
+			moduleCell = profile -> GetBinContent(i+1,j+1);
+			if(moduleCell < 1.5) occupancy ++;
+		}
+	}
+	detector_coverage_loss = 100. * (1. - double( occupancy )/( double( etaBins ) * double ( phiBins ) ) );
+	return  detector_coverage_loss;
+}
+/*
 double SCTErrMonTool::calculateDetectorCoverageLoss( const double moduleCell[100][100] )
 {
 	double detector_coverage_loss = 0.;
@@ -2490,7 +2563,6 @@ double SCTErrMonTool::calculateDetectorCoverageLoss( const double moduleCell[100
 		}
 	}
 	detector_coverage_loss = 100. * (1. - double( occupancy )/( double( etaBins ) * double ( phiBins ) ) );
-	ATH_MSG_INFO("Detector Coverage Loss : " << detector_coverage_loss);
 	return  detector_coverage_loss;
 }
 //====================================================================================================
@@ -2549,3 +2621,4 @@ void SCTErrMonTool::calculateDeadModule( moduleGeo_t module, double moduleCell[1
 	}
 	return;
 }
+*/

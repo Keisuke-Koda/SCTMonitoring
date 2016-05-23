@@ -16,8 +16,4 @@ ssS'../../../../../../../../../../cvmfs/atlas.cern.ch/repo/sw/software/x86_64-sl
 p8
 S'../../../../InstallArea/python/SCT_Monitoring/__init__.py'
 p9
-sS'../../../../../../../../../../../cvmfs/atlas.cern.ch/repo/sw/software/x86_64-slc6-gcc49-opt/20.7.5/GAUDI/v26r2p1-lcg81c/GaudiPolicy/cmt/fragments/__init__.py'
-p10
-S'../../../../InstallArea/python/SCT_Monitoring/__init__.py'
-p11
 ssb.
