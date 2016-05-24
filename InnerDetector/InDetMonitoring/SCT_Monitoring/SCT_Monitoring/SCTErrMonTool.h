@@ -328,52 +328,54 @@ class SCTErrMonTool : public ManagedMonitorToolBase
   bool SyncDisabledSCT();
   bool SyncErrorSCT();
 
+/*
   void fillModule( moduleGeo_t module,  TProfile2D* profile );
 	double calculateDetectorCoverageLoss(const TProfile2D* profile );
-/*
-  void fillModule( moduleGeo_t module,  TH2F* histo );
-	double calculateDetectorCoverageLoss(const double moduleCell[100][100] );
-	void calculateDeadModule( moduleGeo_t module, double moduleCell[100][100] );
+	double calculateDetectorCoverageLoss(const double moduleCell[100][100]);
+	void calculateDeadModule( moduleGeo_t module, double moduleCell[100][100]);
 */
+  void fillModule( moduleGeo_t module,  TH2F* histo );
+	double calculateDetectorCoverageLoss(const TH2F * histo );
 
   const InDetDD::SCT_DetectorManager * m_sctManager;
 
   geoContainerPure_t m_disabledGeoSCT;
   geoContainer_t m_errorGeoSCT;
 
-/*
   TH2F * m_disabledModulesMapSCT;
   TH2F * m_errorModulesMapSCT;
   TH2F * m_totalModulesMapSCT;
-	*/
+/*
   TProfile2D* m_disabledModulesMapSCT;
   TProfile2D* m_errorModulesMapSCT;
   TProfile2D* m_totalModulesMapSCT;
+*/
 
   const unsigned int m_nBinsEta;
   const double 		 m_rangeEta;
   const unsigned int m_nBinsPhi;
-
-/*
+	
+	/*
 	double m_disabledCell[100][100];
 	double m_errorCell[100][100];
 	double m_totalCell[100][100];
-*/
+	*/
 
   TH1F * m_DisabledDetectorCoverageLossVsLB;
   TH1F * m_ErrorDetectorCoverageLossVsLB;
   TH1F * m_TotalDetectorCoverageLossVsLB;
-/*
+	/*
   TProfile * m_DisabledDetectorCoverageLossVsLB;
   TProfile * m_ErrorDetectorCoverageLossVsLB;
   TProfile * m_TotalDetectorCoverageLossVsLB;
   TH1F * m_MaxDisabledDetectorCoverageLossVsLB;
   TH1F * m_MaxErrorDetectorCoverageLossVsLB;
   TH1F * m_MaxTotalDetectorCoverageLossVsLB;
-*/
+
 	double m_disabledDetectorCoverageLossMax;
 	double m_errorDetectorCoverageLossMax;
 	double m_totalDetectorCoverageLossMax;
+	*/
 };
 
 #endif
