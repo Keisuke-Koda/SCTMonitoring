@@ -76,7 +76,7 @@ class SCTErrMonTool : public ManagedMonitorToolBase
   private:
 	  static const int NREGIONS_INC_GENERAL=SCT_Monitoring::N_REGIONS+1;
 	  typedef TProfile2D * Prof2_t;
-	  typedef std::vector<Prof2_t> VecProf2_t;
+		typedef std::vector<Prof2_t> VecProf2_t;
     StatusCode checkRateHists();
     StatusCode fillByteStreamErrors();
     StatusCode bookErrHistos();
@@ -330,12 +330,13 @@ class SCTErrMonTool : public ManagedMonitorToolBase
 
 /*
   void fillModule( moduleGeo_t module,  TProfile2D* profile );
-	double calculateDetectorCoverageLoss(const TProfile2D* profile );
-	double calculateDetectorCoverageLoss(const double moduleCell[100][100]);
+	double calculateDetectorCoverageoss(const TProfile2D* profile );
+	double calculateDetectorCoverageoss(const double moduleCell[100][100]);
 	void calculateDeadModule( moduleGeo_t module, double moduleCell[100][100]);
 */
+
   void fillModule( moduleGeo_t module,  TH2F* histo );
-	double calculateDetectorCoverageLoss(const TH2F * histo );
+	double calculateDetectorCoverage(const TH2F * histo );
 
   const InDetDD::SCT_DetectorManager * m_sctManager;
 
@@ -345,36 +346,34 @@ class SCTErrMonTool : public ManagedMonitorToolBase
   TH2F * m_disabledModulesMapSCT;
   TH2F * m_errorModulesMapSCT;
   TH2F * m_totalModulesMapSCT;
+
 /*
   TProfile2D* m_disabledModulesMapSCT;
   TProfile2D* m_errorModulesMapSCT;
   TProfile2D* m_totalModulesMapSCT;
 */
-
   const unsigned int m_nBinsEta;
   const double 		 m_rangeEta;
   const unsigned int m_nBinsPhi;
-	
 	/*
 	double m_disabledCell[100][100];
 	double m_errorCell[100][100];
 	double m_totalCell[100][100];
 	*/
-
-  TH1F * m_DisabledDetectorCoverageLossVsLB;
-  TH1F * m_ErrorDetectorCoverageLossVsLB;
-  TH1F * m_TotalDetectorCoverageLossVsLB;
+  TH1F * m_DisabledDetectorCoverageVsLB;
+  TH1F * m_ErrorDetectorCoverageVsLB;
+  TH1F * m_TotalDetectorCoverageVsLB;
 	/*
-  TProfile * m_DisabledDetectorCoverageLossVsLB;
-  TProfile * m_ErrorDetectorCoverageLossVsLB;
-  TProfile * m_TotalDetectorCoverageLossVsLB;
-  TH1F * m_MaxDisabledDetectorCoverageLossVsLB;
-  TH1F * m_MaxErrorDetectorCoverageLossVsLB;
-  TH1F * m_MaxTotalDetectorCoverageLossVsLB;
+  TProfile * m_DisabledDetectorCoverageVsLB;
+  TProfile * m_ErrorDetectorCoverageossVsLB;
+  TProfile * m_TotalDetectorCoverageossVsLB;
+  TH1F * m_MaxDisabledDetectorCoverageVsLB;
+  TH1F * m_MaxErrorDetectorCoverageVsLB;
+  TH1F * m_MaxTotalDetectorCoverageVsLB;
 
-	double m_disabledDetectorCoverageLossMax;
-	double m_errorDetectorCoverageLossMax;
-	double m_totalDetectorCoverageLossMax;
+	double m_disabledDetectorCoverageMax;
+	double m_errorDetectorCoverageMax;
+	double m_totalDetectorCoverageMax;
 	*/
 };
 
