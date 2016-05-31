@@ -1013,10 +1013,16 @@ StatusCode SCTErrMonTool::fillByteStreamErrors() {
 		ATH_MSG_INFO("Error Detector Coverage : " << error_detector_coverage);
 		total_detector_coverage = calculateDetectorCoverage(m_totalModulesMapSCT);
 		ATH_MSG_INFO("Total Detector Coverage : " << total_detector_coverage);
+		m_ErrorDetectorCoverageVsLB->SetBinContent((int)current_lb, error_detector_coverage);
+		m_TotalDetectorCoverageVsLB->SetBinContent((int)current_lb, total_detector_coverage);
+		m_DisabledDetectorCoverageVsLB->SetBinContent((int)current_lb, disabled_detector_coverage);
+		//ATH_MSG_INFO("Detector Coverage Fill Histogram");
+		/*
 		m_DisabledDetectorCoverageVsLB->Fill((int)current_lb, disabled_detector_coverage);
-		ATH_MSG_INFO("Detector Coverage Fill Histogram");
 		m_ErrorDetectorCoverageVsLB->Fill((int)current_lb, error_detector_coverage);
 		m_TotalDetectorCoverageVsLB->Fill((int)current_lb, total_detector_coverage);
+		*/
+		ATH_MSG_INFO("Detector Coverage Fill Histogram");
 	}
 
 /*

@@ -12,8 +12,4 @@ S'../../../InnerDetector/InDetMonitoring/SCT_Monitoring/genConf/SCT_Monitoring/S
 p6
 S'../../../../InstallArea/python/SCT_Monitoring/SCT_MonitoringConf.py'
 p7
-ssS'../../../../../../../../../../cvmfs/atlas.cern.ch/repo/sw/software/x86_64-slc6-gcc49-opt/20.7.5/GAUDI/v26r2p1-lcg81c/GaudiPolicy/cmt/fragments/__init__.py'
-p8
-S'../../../../InstallArea/python/SCT_Monitoring/__init__.py'
-p9
-ssb.
+sssb.
