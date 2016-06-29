@@ -972,7 +972,8 @@ StatusCode SCTErrMonTool::fillByteStreamErrors() {
   }
 
 //bad modules histo
-	if((endOfLumiBlock || endOfRun ) && m_manager->lumiBlockNumber() % 1 == 0){
+	//if((endOfLumiBlock || endOfRun) || m_manager->lumiBlockNumber() % 50 == 0){
+	if((endOfLumiBlock || endOfRun) && m_manager->lumiBlockNumber() % 1 == 0){
 		m_disabledModulesMapSCT->Reset("ICE");
 		m_errorModulesMapSCT->Reset("ICE");
 		m_totalModulesMapSCT->Reset("ICE");
@@ -1710,15 +1711,15 @@ StatusCode  SCTErrMonTool::bookConfMaps(){
           // m_2d_MaxModulesWithErrorsVsLB[reg] = new TH2I(maxmoderrors[reg]+"_2d","Max num of links with errors per event in "+region[reg],n_lumiBins,0.5,n_lumiBins+0.5,8176,0,8176);
         }
           //m_DisabledDetectorCoverageVsLB = new TProfile("SCTDisabledDetectorCoverageVsLbs","Ave. disabled detector coverage per event in ",n_lumiBins,0.5,n_lumiBins+0.5);
-          m_DisabledDetectorCoverageVsLB = new TH1F("SCTDisabledDetectorCoverageVsLbs"," of disabled detector coverage per event in ",n_lumiBins,0.5,n_lumiBins+0.5);
+          m_DisabledDetectorCoverageVsLB = new TH1F("SCTDisabledDetectorCoverageVsLbs","disabled detector coverage per event",n_lumiBins,0.5,n_lumiBins+0.5);
           m_DisabledDetectorCoverageVsLB->GetXaxis()->SetTitle("LumiBlock");
           m_DisabledDetectorCoverageVsLB->GetYaxis()->SetTitle("Disabled Detector Coverage");
           //m_ErrorDetectorCoverageVsLB = new TProfile("SCTErrorDetectorCoverageVsLbs","Ave. error detector coverage per event in ",n_lumiBins,0.5,n_lumiBins+0.5);
-          m_ErrorDetectorCoverageVsLB = new TH1F("SCTErrorDetectorCoverageVsLbs","error detector coverage per event in ",n_lumiBins,0.5,n_lumiBins+0.5);
+          m_ErrorDetectorCoverageVsLB = new TH1F("SCTErrorDetectorCoverageVsLbs","error detector coverage per event",n_lumiBins,0.5,n_lumiBins+0.5);
           m_ErrorDetectorCoverageVsLB->GetXaxis()->SetTitle("LumiBlock");
           m_ErrorDetectorCoverageVsLB->GetYaxis()->SetTitle("Error Detector Coverage");
           //m_TotalDetectorCoverageVsLB = new TProfile("SCTTotalDetectorCoverageVsLbs","Ave. total detector coverage per event in ",n_lumiBins,0.5,n_lumiBins+0.5);
-          m_TotalDetectorCoverageVsLB = new TH1F("SCTTotalDetectorCoverageVsLbs","total detector coverage per event in ",n_lumiBins,0.5,n_lumiBins+0.5);
+          m_TotalDetectorCoverageVsLB = new TH1F("SCTTotalDetectorCoverageVsLbs","total detector coverage per event",n_lumiBins,0.5,n_lumiBins+0.5);
           m_TotalDetectorCoverageVsLB->GetXaxis()->SetTitle("LumiBlock");
           m_TotalDetectorCoverageVsLB->GetYaxis()->SetTitle("Total Detector Coverage");
 				/*	
@@ -2600,7 +2601,7 @@ double SCTErrMonTool::calculateDetectorCoverage( const TH2F * histo )
 		for( unsigned int j = 0; j < phiBins; j++){
 			//moduleCell = profile -> GetBinContent(i+1,j+1);
 			moduleCell = histo -> GetBinContent(i+1,j+1);
-			if(moduleCell < 1.5) occupancy ++;
+			if(moduleCell < 2.5) occupancy ++;
 		}
 	}
 	detector_coverage = 100. * double( occupancy )/( double( etaBins ) * double ( phiBins ) );
